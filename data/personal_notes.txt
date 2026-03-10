@@ -1,0 +1,131 @@
+# Personal Notes & Journal
+# Owner: Alex Morgan
+# Started: January 2026
+
+---
+
+## January 6, 2026 — Monday
+New year, new intentions. Setting up my goals for this year:
+- Lose 8 kg by June (start with 30 min walks 5x/week)
+- Save at least ₹15,000 per month
+- Read 12 books (one per month)
+- Learn Spanish on Duolingo — daily streak goal
+
+Grocery list for this week:
+- Oats, eggs, bananas, Greek yogurt
+- Almonds, olive oil, spinach
+- Coffee beans (dark roast from local market)
+
+---
+
+## January 9, 2026 — Thursday
+Doctor appointment today — Dr. Ramesh at City Clinic, 11 AM.
+- BP: 118/76 (good)
+- Weight: 82 kg (target: 74 kg)
+- Prescribed: Vitamin D3 (60K IU, once per week for 8 weeks), Omega-3 daily
+- Next checkup: March 2026
+- Note to self: drink more water, at least 2.5L/day
+
+---
+
+## January 14, 2026 — Tuesday
+Watched "Oppenheimer" finally. Really good. Christopher Nolan is insane.
+Want to watch next: Dune Part 2, Poor Things.
+
+Book finished: "Atomic Habits" by James Clear
+Key takeaway: 1% improvements compound. Identity-based habits matter more than goal-based ones.
+Next book: "Deep Work" by Cal Newport
+
+---
+
+## January 20, 2026 — Monday
+Work update: Got assigned to the Q1 client dashboard project.
+- Team: Me, Kiran, Disha, Suresh (PM)
+- Deadline: March 31
+- Stack: React, FastAPI, PostgreSQL
+- First sprint review: Feb 3
+
+Need to set up the dev environment today. Check Notion for the project brief.
+
+---
+
+## January 26, 2026 — Sunday
+Weekend trip to Coorg with college friends (Rahul, Meena, Jaya, Sam).
+Total trip cost split:
+- Hotel (2 nights): ₹3,200 per person
+- Petrol: ₹600 per person
+- Food approx: ₹900 per person
+- Total: ~₹4,700 per person
+
+Absolutely worth it. Coffee estate tour was the highlight.
+Meena still owes me ₹1,500 from the hotel booking — remind her!
+
+---
+
+## February 2, 2026 — Monday
+Monthly check-in:
+- Weight: 80.5 kg ✅ (lost 1.5 kg)
+- Books: "Atomic Habits" done, "Deep Work" started
+- Savings: ₹16,200 saved in January ✅
+- Duolingo streak: 27 days ✅
+
+Feeling good about the year so far. Need to push harder on exercise.
+
+---
+
+## February 10, 2026 — Tuesday
+Laptop acting slow — might need to upgrade RAM from 8GB to 16GB.
+Quote from TechZone Store: ₹3,500 for 8GB DDR4 RAM
+Backup plan: Buy from Amazon (₹2,900, arrives in 2 days)
+
+Password reminder: company Jira login changed last week — new one saved in Bitwarden.
+
+---
+
+## February 18, 2026 — Wednesday
+Mom's birthday coming up — March 3rd.
+Gift ideas:
+1. Silk saree from Nalli's (budget ₹4,000–₹5,000)
+2. Spa day voucher at Greenleaf Wellness (₹2,500)
+3. Gold earrings (might be too expensive)
+
+Going with option 2 + a small bouquet. Book appointment by Feb 28.
+
+---
+
+## February 25, 2026 — Tuesday
+Call with insurance agent — Vikram from SafeLife Insurance:
+- Current policy: Term plan ₹50L cover, premium ₹8,200/year
+- Renewal due: April 15, 2026
+- Suggested add-on: Critical illness rider (₹1,500 extra/year) — considering it
+- Health insurance via employer covers ₹3L — probably enough for now
+
+---
+
+## March 1, 2026 — Sunday
+Monthly check-in:
+- Weight: 79 kg ✅ (3 kg down total!)
+- Savings: ₹15,800 in February ✅
+- Books: "Deep Work" done — excellent
+- Duolingo streak: 54 days ✅
+
+March goals:
+- Start gym (core + cardio)
+- Submit Q1 project by deadline
+- File ITR by March 31 (consult CA Pradeep)
+
+---
+
+## March 5, 2026 — Thursday
+To-do this week:
+- [ ] Submit project Sprint 2 deliverables (by March 7)
+- [ ] Call CA Pradeep about ITR filing
+- [ ] Buy mom's birthday gift (March 3 — already late! Do it today)
+- [ ] Renew car insurance (due March 20 — Bajaj Allianz)
+- [ ] Book dentist appointment — overdue by 6 months
+
+Shopping list:
+- New running shoes (Nike or Adidas, budget ₹3,500)
+- Protein powder (Whey, vanilla flavor — check GNC or Amazon)
+
+---

@@ -37,6 +37,7 @@ export type QueryResponse = {
   sources: SourceItem[];
   toolUsed?: string[];
   status?: "success" | "empty";
+  elapsedSeconds?: number;
   structuredTruth?: StructuredTruth;
   conflictsPanel?: ConflictItem[];
 

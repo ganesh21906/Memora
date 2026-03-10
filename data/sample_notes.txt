@@ -1,0 +1,71 @@
+# Annual Gala Event — Meeting Notes & Decisions Log
+# Last Updated: January 31, 2026
+
+## Planning Meeting — January 15, 2026 (10:00 AM)
+Attendees: Sarah M., Raj P., Priya S., Ops Lead
+
+### Decisions Made:
+- CONFIRMED: Date is Saturday, March 15, 2026
+- CONFIRMED: Venue is Grand Pavilion, Hall B (capacity 300)
+- Budget cap set at ₹25 lakhs all-inclusive
+- Priya to manage guest list and RSVP tracking
+
+---
+
+## Catering Meeting — January 18, 2026
+Attendees: Sarah M., Raj Patel (Spice Garden)
+
+### Final Catering Decisions:
+- Menu: 5-course continental dinner (mix veg/non-veg)
+- Per plate cost: ₹1,200 (confirmed, non-negotiable)
+- Target covers: 250 + 50 standby = 300 total catered
+- Vegan: 20 plates pre-ordered
+- Gluten-free: 15 plates pre-ordered
+- Bar closes at 10:00 PM (soft bar until 11:00 PM)
+- DECISION: No late night snack buffet (budget constraint)
+
+---
+
+## Operations Meeting — January 30, 2026
+Attendees: Ops Lead, Sarah M., IT team
+
+### Transportation Decisions (FINAL):
+- 4 shuttle buses from City Center (6:00 PM departure)
+- Return shuttles: 11:30 PM and 12:00 AM (midnight)
+- Parking: Lot A reserved (150 spots, free for all guests)
+- Valet: 20 VIP passes allocated — VIPs get personal valet
+- Emergency transport: Metro Cabs on standby (10 cabs pre-booked)
+
+### AV & Tech Decisions:
+- DataSense AV confirmed (₹85,000 package)
+- DECIDED: Live stream to YouTube (public) + private company stream
+- Backup generator booked as precaution (₹8,000)
+- Stage setup begins at 2:00 PM
+
+---
+
+## Budget Summary (as of Jan 31):
+- Venue deposit: ₹75,000 paid ✅
+- Catering (250 covers): ₹3,00,000 estimated
+- AV & Tech: ₹85,000 confirmed
+- Shuttle buses: ₹40,000 estimated
+- Decorations: ₹60,000 budgeted
+- Miscellaneous: ₹40,000 reserve
+- TOTAL ESTIMATED: ₹6,00,000
+
+---
+
+## Pending Action Items:
+- [ ] Chase non-RSVP guests by Feb 10
+- [ ] Finalize guest count for catering by March 1
+- [ ] Confirm dietary requirements with Spice Garden
+- [ ] Send welcome kit to speakers by Feb 20
+- [ ] Rehearse program schedule — March 12
+
+---
+
+## Key Contacts:
+- Venue: Grand Pavilion — contact@grandpavilion.in
+- Catering: Raj Patel — raj.patel@spicegarden.in
+- AV: DataSense AV — support@datasense-av.com
+- Transport: Metro Cabs — fleet@metrocabs.in

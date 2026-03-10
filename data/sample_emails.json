@@ -1,0 +1,53 @@
+[
+  {
+    "id": "email_001",
+    "subject": "RE: Annual Gala Event — Venue Confirmation ✅",
+    "sender": "Sarah Mitchell <sarah.mitchell@eventsco.com>",
+    "date": "Mon, 20 Jan 2026 10:14:00 +0000",
+    "body": "Hi team,\n\nGreat news! The Grand Pavilion venue has confirmed our booking for Saturday, March 15th, 2026. Capacity is 300 guests.\n\nKey logistics we finalized in the call today:\n- **Venue:** Grand Pavilion, Hall B\n- **Date:** Saturday, March 15, 2026\n- **Time:** 7:00 PM – 11:30 PM\n- **Setup access from:** 2:00 PM\n- **Deposit paid:** ₹75,000 (receipt attached)\n\nCatering will be handled by Spice Garden (confirmed separately). Let me know if there are any changes.\n\nBest,\nSarah\nEvents Coordinator",
+    "attachments": [
+      {"filename": "venue_receipt.pdf", "mime_type": "application/pdf", "attachment_id": "", "message_id": "email_001"}
+    ]
+  },
+  {
+    "id": "email_002",
+    "subject": "Event Logistics — Catering Final Decision",
+    "sender": "Raj Patel <raj.patel@spicegarden.in>",
+    "date": "Tue, 21 Jan 2026 14:32:00 +0000",
+    "body": "Dear Team,\n\nThank you for choosing Spice Garden for your Annual Gala on March 15th.\n\nHere is what we finalized:\n- **Menu:** 5-course continental dinner with vegetarian and non-vegetarian options\n- **Guests:** 250 confirmed, 50 contingency covers\n- **Catering cost:** ₹1,200 per plate (all-inclusive)\n- **Special dietary:** 20 vegan meals, 15 gluten-free meals pre-ordered\n- **Bar:** Open bar from 7:00 PM to 10:00 PM, soft bar thereafter\n- **Setup time:** Caterers will arrive at 1:00 PM for setup\n\nPlease confirm the final guest count by March 1st.\n\nWarm regards,\nRaj Patel\nSpice Garden Events",
+    "attachments": [
+      {"filename": "catering_proposal.pdf", "mime_type": "application/pdf", "attachment_id": "", "message_id": "email_002"},
+      {"filename": "menu_options.txt", "mime_type": "text/plain", "attachment_id": "", "message_id": "email_002"}
+    ]
+  },
+  {
+    "id": "email_003",
+    "subject": "Annual Gala — AV & Tech Setup Confirmed",
+    "sender": "DataSense AV <support@datasense-av.com>",
+    "date": "Wed, 22 Jan 2026 09:00:00 +0000",
+    "body": "Hi,\n\nWe've confirmed the following AV setup for your March 15th event:\n\n- 2x LED screens (4K, 120-inch)\n- Full stage lighting (programmable, 3 spotlights)\n- Wireless microphones: 4 lapels + 2 handheld\n- Live streaming setup (YouTube + private stream)\n- Sound system: 10,000W, 6-speaker surround\n- Technician on-site from 1:00 PM to midnight\n\nCost agreed: ₹85,000 (invoice attached).\n\nLet us know if you need any additional equipment.\n\nBest,\nDataSense AV Team",
+    "attachments": [
+      {"filename": "av_invoice.pdf", "mime_type": "application/pdf", "attachment_id": "", "message_id": "email_003"}
+    ]
+  },
+  {
+    "id": "email_004",
+    "subject": "RSVP Status Update — Guest List (as of Jan 25)",
+    "sender": "Priya Sharma <priya@company.com>",
+    "date": "Sat, 25 Jan 2026 16:45:00 +0000",
+    "body": "Team,\n\nHere's the current RSVP status for the Annual Gala:\n\n- Total invitations sent: 320\n- Confirmed attending: 218\n- Declined: 42\n- No response: 60\n\nWe need to finalize the guest count by March 1st for catering.\nI've attached the full CSV with guest details and dietary requirements.\n\nAction items:\n- Chase the 60 non-responders by February 10th\n- Update Raj at Spice Garden once we have the final count\n\nThanks,\nPriya",
+    "attachments": [
+      {"filename": "guest_list.csv", "mime_type": "text/csv", "attachment_id": "", "message_id": "email_004"}
+    ]
+  },
+  {
+    "id": "email_005",
+    "subject": "Transportation & Parking — Decision Made",
+    "sender": "ops@company.com",
+    "date": "Fri, 31 Jan 2026 11:00:00 +0000",
+    "body": "All,\n\nAfter the operations meeting, we've decided on the following for transportation:\n\n- **Shuttle buses:** 4 buses from City Center (pickup at 6:00 PM, return at 11:45 PM)\n- **Parking:** 150 spots reserved at Grand Pavilion (Lot A), free for guests\n- **Valet service:** Available for VIP guests (20 VIP passes allocated)\n- **Taxi coordination:** Partnered with Metro Cabs for post-event drops\n\nThe operations logistics spreadsheet is attached with full vendor details and costs.\n\nPlease review and confirm by Feb 5th.\n\nOps Team",
+    "attachments": [
+      {"filename": "operations_logistics.csv", "mime_type": "text/csv", "attachment_id": "", "message_id": "email_005"}
+    ]
+  }
+]

@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { AlertTriangle, ShieldAlert, ShieldCheck, ArrowRightCircle } from "lucide-react";
+import { ShieldAlert, ShieldCheck, ArrowRightCircle } from "lucide-react";
 import { ConflictItem } from "@/lib/types";
 
 function getSeverityStyle(severity: ConflictItem["severity"]) {
@@ -38,18 +37,12 @@ export default function ConflictPanel({
 }: {
   conflicts: ConflictItem[];
 }) {
-  if (!conflicts || conflicts.length === 0) return null;
-
   const hasRealConflict = conflicts.some(
     (item) => item.severity === "high" || item.severity === "medium"
   );
 
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass soft-shadow rounded-3xl border border-white/80 p-6"
-    >
+    <section className="glass soft-shadow rounded-3xl border border-white/80 p-6">
       <div className="mb-5 flex items-center gap-2">
         {hasRealConflict ? (
           <ShieldAlert size={18} className="text-slate-800" />
@@ -61,7 +54,14 @@ export default function ConflictPanel({
         </h2>
       </div>
 
-      <div className="space-y-5">
+      {conflicts.length === 0 ? (
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 py-8 text-center">
+          <ShieldCheck size={28} className="mb-3 text-emerald-500" />
+          <p className="text-sm font-semibold text-emerald-700">No conflicts detected</p>
+          <p className="mt-1 text-xs text-emerald-600">All your sources are consistent for this query.</p>
+        </div>
+      ) : (
+        <div className="space-y-5">
         {conflicts.map((item, index) => {
           const styles = getSeverityStyle(item.severity);
 
@@ -130,7 +130,8 @@ export default function ConflictPanel({
             </div>
           );
         })}
-      </div>
-    </motion.section>
+        </div>
+      )}
+    </section>
   );
 }

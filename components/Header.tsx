@@ -11,7 +11,7 @@ export default function Header() {
           </div>
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-slate-950">
-              Context-Aware Personal Executive
+              Memora AI
             </h1>
             <p className="text-sm text-slate-500">
               Search across notes, emails, PDFs, and CSVs

@@ -134,6 +134,12 @@ export default function FileUploadPanel() {
     void loadFiles();
   }, []);
 
+  async function uploadToBackend(file: File): Promise<void> {
+    const formData = new FormData();
+    formData.append("file", file);
+    await fetch("/api/upload", { method: "POST", body: formData });
+  }
+
   async function addFiles(files: FileList | null) {
     if (!files) return;
 
@@ -153,6 +159,7 @@ export default function FileUploadPanel() {
 
       nextFiles.push(item);
       await saveStoredFile(item);
+      void uploadToBackend(file);
     }
 
     const refreshed = await getAllStoredFiles();

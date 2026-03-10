@@ -32,6 +32,7 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +40,22 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+venv/
+.venv/
+dist/
+*.egg
+
+# Backend runtime data (generated at runtime, not committed)
+data/chroma/
+data/uploads/
+
+# Gmail OAuth credentials (sensitive)
+credentials/gmail_token.json
+credentials/gmail_credentials.json

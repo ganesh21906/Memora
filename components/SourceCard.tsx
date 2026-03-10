@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { FileText, Mail, Table2, FileBadge2 } from "lucide-react";
 import { SourceItem, SourceType } from "@/lib/types";
 
@@ -79,12 +78,7 @@ export default function SourceCard({
   query: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.22 }}
-      className="glass soft-shadow rounded-3xl border border-white/80 p-5"
-    >
+    <div className="glass soft-shadow rounded-3xl border border-white/80 p-5">
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-start gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
@@ -110,6 +104,6 @@ export default function SourceCard({
       <p className="text-sm leading-7 text-slate-700">
         {highlightText(source.snippet, query)}
       </p>
-    </motion.div>
+    </div>
   );
 }

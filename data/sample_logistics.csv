@@ -1,0 +1,20 @@
+Category,Item,Vendor,Contact,Cost (INR),Status,Notes
+Venue,Hall B Booking,Grand Pavilion,contact@grandpavilion.in,150000,Confirmed,"Deposit ₹75,000 paid. Balance due March 1"
+Venue,Parking Lot A,Grand Pavilion,contact@grandpavilion.in,0,Confirmed,Free for all guests (150 spots)
+Catering,Dinner (250 covers),Spice Garden,raj.patel@spicegarden.in,300000,Confirmed,₹1200/plate. Final count by March 1
+Catering,Vegan Meals (20),Spice Garden,raj.patel@spicegarden.in,24000,Confirmed,Included in main contract
+Catering,Gluten-free Meals (15),Spice Garden,raj.patel@spicegarden.in,18000,Confirmed,Included in main contract
+Catering,Open Bar (7-10 PM),Spice Garden,raj.patel@spicegarden.in,75000,Confirmed,Soft bar until 11 PM
+AV & Tech,LED Screens + Lights,DataSense AV,support@datasense-av.com,85000,Confirmed,Package includes technician till midnight
+AV & Tech,Live Streaming,DataSense AV,support@datasense-av.com,0,Confirmed,Included in AV package
+AV & Tech,Backup Generator,PowerPro Rentals,info@powerpro.in,8000,Confirmed,Precautionary
+Transport,Shuttle Buses (4),CityRide Buses,rides@cityride.in,40000,Confirmed,Depart City Center 6 PM
+Transport,Valet Service (VIP),VIP Valet Co.,valet@vipco.in,15000,Confirmed,20 VIP passes allocated
+Transport,Emergency Cabs (10),Metro Cabs,fleet@metrocabs.in,0,On Standby,Pre-booked; pay on use
+Decor,Stage & Floral,Bloom Events,hello@bloomevents.in,60000,Pending,Quote received; pending final approval
+Decor,Table Centerpieces,Bloom Events,hello@bloomevents.in,20000,Pending,Included in decor package
+Photography,Event Photography,LensArt Studio,shoot@lensart.in,35000,Confirmed,Full day; raw + edited photos
+Photography,Videography,LensArt Studio,shoot@lensart.in,25000,Confirmed,Highlight reel + full recording
+Security,Security Personnel (6),SecureGuard,info@secureguard.in,18000,Confirmed,6 guards from 5 PM to midnight
+Miscellaneous,Welcome Kits (250),PrintPerfect,orders@printperfect.in,12500,In Progress,₹50 per kit; delivery by Feb 28
+Miscellaneous,Contingency Reserve,—,—,40000,Reserved,—

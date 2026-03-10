@@ -13,10 +13,10 @@ type Props = {
 };
 
 const SAMPLE_PROMPTS = [
-  "What did we decide about transport for the symposium?",
-  "Find the invoice mail from Ravi",
-  "Was the budget mentioned in the PDF?",
-  "Show me the note that mentions catering",
+  "How much did I spend on groceries last month?",
+  "Does Meena owe me money?",
+  "What did the doctor say in January?",
+  "What are my pending tasks for March?",
 ];
 
 export default function ChatInput({
@@ -78,7 +78,7 @@ export default function ChatInput({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Example: What did we finalize for transport for the symposium?"
+          placeholder="Example: How much did I spend on food this month?"
           className="w-full resize-none rounded-3xl border border-slate-200 bg-slate-50 px-5 py-4 text-sm leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:bg-white focus:ring-4 focus:ring-indigo-100"
         />
 
