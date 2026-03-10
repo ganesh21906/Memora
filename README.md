@@ -37,27 +37,27 @@ Memora AI is a **context-aware personal executive assistant** that:
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                  Next.js Frontend (port 3000)           │
-│  ChatInput → /api/query proxy → ResponsePanel          │
-│  FileUpload → /api/upload proxy                        │
-│  ConflictPanel │ StructuredTruthPanel │ SourceCards    │
+│  ChatInput → /api/query proxy → ResponsePanel           │
+│  FileUpload → /api/upload proxy                         │
+│  ConflictPanel │ StructuredTruthPanel │ SourceCards     │
 └────────────────────┬────────────────────────────────────┘
                      │ HTTP
 ┌────────────────────▼────────────────────────────────────┐
 │                FastAPI Backend (port 8000)              │
 │                                                         │
-│  /query ──► Pre-retrieval Agent                        │
+│  /query ──► Pre-retrieval Agent                         │
 │              │                                          │
-│              ├── search_pdf  ──► ChromaDB (type:pdf)   │
-│              ├── search_txt  ──► ChromaDB (type:txt)   │
-│              ├── search_csv  ──► ChromaDB (type:csv)   │
-│              ├── search_whatsapp ► ChromaDB (whatsapp) │
-│              └── search_email ──► sample_emails.json   │
+│              ├── search_pdf  ──► ChromaDB (type:pdf)    │
+│              ├── search_txt  ──► ChromaDB (type:txt)    │
+│              ├── search_csv  ──► ChromaDB (type:csv)    │
+│              ├── search_whatsapp ► ChromaDB (whatsapp)  │
+│              └── search_email ──► sample_emails.json    │
 │                                                         │
-│              All results ──► Groq LLM (LLaMA 3.3 70B) │
+│              All results ──► Groq LLM (LLaMA 3.3 70B)   │
 │              LLM returns: answer + structured_truth +   │
 │                           conflicts (JSON)              │
 │                                                         │
-│  /upload ──► index_file() ──► ChromaDB                 │
+│  /upload ──► index_file() ──► ChromaDB                  │
 └─────────────────────────────────────────────────────────┘
 ```
 
