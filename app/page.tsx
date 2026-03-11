@@ -184,8 +184,8 @@ export default function HomePage() {
           );
       case "summary":
         return (
-          <div className="space-y-2.5">
-            <p className="section-label mb-3">Session Summary</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <p className="section-label" style={{ marginBottom: 4 }}>Session Summary</p>
             {[
               { label: "Total Queries",  val: totalQueries },
               { label: "Files Indexed",  val: sourceStats.total },

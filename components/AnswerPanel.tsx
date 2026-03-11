@@ -12,7 +12,7 @@ type AnswerPanelProps = {
 
 function Skeleton() {
   return (
-    <div className="space-y-2.5 pt-0.5" aria-label="Generating answer…">
+    <div style={{ display: "flex", flexDirection: "column", gap: 8, paddingTop: 2 }} aria-label="Generating answer…">
       <div className="skeleton" style={{ height: 14, width: "72%" }} />
       <div className="skeleton" style={{ height: 14, width: "100%" }} />
       <div className="skeleton" style={{ height: 14, width: "88%" }} />

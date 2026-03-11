@@ -15,7 +15,7 @@ export default function ConflictPanel({ conflicts }: { conflicts: ConflictItem[]
 
   if (conflicts.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 py-10 text-center">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 16px", textAlign: "center" }}>
         <div style={{ width: 42, height: 42, borderRadius: 10, background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <ShieldCheck size={18} style={{ color: "var(--green)" }} />
         </div>
@@ -28,7 +28,7 @@ export default function ConflictPanel({ conflicts }: { conflicts: ConflictItem[]
   }
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 4 }}>
         {hasReal
           ? <ShieldAlert size={14} style={{ color: "#FCA5A5", flexShrink: 0 }} />

@@ -80,9 +80,9 @@ export default function FileUploader({ onUploaded, onStatsChange, compact = fals
   const visible = compact ? files.slice(0, 4) : files;
 
   return (
-    <div className="space-y-3">
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <span className="section-label">Upload Sources</span>
         <span style={{ fontSize: 10.5, color: "var(--text-ghost)" }}>PDF · TXT · CSV</span>
       </div>
@@ -122,13 +122,13 @@ export default function FileUploader({ onUploaded, onStatsChange, compact = fals
       {files.length === 0 ? (
         <p style={{ fontSize: 12, color: "var(--text-ghost)", padding: "4px 2px" }}>No files uploaded yet</p>
       ) : (
-        <div className="space-y-1.5">
+        <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
           {visible.map((file) => {
             const kind = ext(file.name);
             return (
               <div key={`${file.name}-${file.size_bytes}`} className="file-row">
                 <span style={{ color: FILE_COLOR[kind], flexShrink: 0 }}>{FILE_ICON[kind]}</span>
-                <span className="flex-1 truncate" style={{ fontSize: 12, color: "var(--text-secondary)" }}>{file.name}</span>
+                <span className="truncate" style={{ flex: 1, fontSize: 12, color: "var(--text-secondary)" }}>{file.name}</span>
                 <span style={{ fontSize: 10.5, color: "var(--text-muted)", fontFamily: "var(--font-mono)", flexShrink: 0 }}>{fmtSize(file.size_bytes)}</span>
               </div>
             );

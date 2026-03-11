@@ -33,7 +33,7 @@ const SCORES = [88, 82, 76, 91, 74, 85, 79, 93];
 export default function EvidenceCards({ sources }: EvidenceCardsProps) {
   if (sources.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-3 py-10 text-center">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 16px", textAlign: "center" }}>
         <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <Search size={16} style={{ color: "var(--text-ghost)" }} />
         </div>
@@ -43,9 +43,9 @@ export default function EvidenceCards({ sources }: EvidenceCardsProps) {
   }
 
   return (
-    <div className="space-y-3">
-      <p className="section-label mb-3">Evidence Cards · {sources.length} source{sources.length !== 1 ? "s" : ""}</p>
-      <div className="grid grid-cols-1 gap-2.5">
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <p className="section-label" style={{ marginBottom: 4 }}>Evidence Cards · {sources.length} source{sources.length !== 1 ? "s" : ""}</p>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {sources.map((source, i) => {
           const meta = SOURCE_META[source.type] ?? FALLBACK;
           const score = SCORES[i % SCORES.length];
@@ -60,9 +60,8 @@ export default function EvidenceCards({ sources }: EvidenceCardsProps) {
               style={{ borderColor: meta.borderColor, animationDelay: `${i * 70}ms` }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between gap-2 px-3 py-2.5"
-                style={{ background: meta.headerBg, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <div className="flex items-center gap-2 min-w-0">
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "8px 12px", background: meta.headerBg, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 0, overflow: "hidden" }}>
                   <span style={{ color: meta.barColor, flexShrink: 0 }}>{meta.icon}</span>
                   <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-primary)" }}>
                     {source.title}
@@ -72,16 +71,16 @@ export default function EvidenceCards({ sources }: EvidenceCardsProps) {
               </div>
 
               {/* Body */}
-              <div className="px-3 py-2.5">
+              <div style={{ padding: "8px 12px" }}>
                 <p style={{ fontSize: 12, lineHeight: 1.65, color: "var(--text-secondary)" }}>{preview}</p>
                 {source.meta && (
-                  <p className="mt-1.5" style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>{source.meta}</p>
+                  <p style={{ marginTop: 5, fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>{source.meta}</p>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="px-3 pb-3">
-                <div className="flex items-center justify-between mb-1.5">
+              <div style={{ padding: "0 12px 10px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 5 }}>
                   <span style={{ fontSize: 11, color: "var(--text-muted)" }}>1 match found</span>
                   <span style={{ fontSize: 11, fontWeight: 600, color: meta.barColor }}>{score}% relevance</span>
                 </div>
