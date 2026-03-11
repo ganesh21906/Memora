@@ -1,33 +1,33 @@
 "use client";
 
 import LoginForm from "@/components/LoginForm";
-import Header from "@/components/Header";
+import { Brain } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <main className="min-h-screen">
-      <Header />
+    <main style={{ minHeight: "100vh", background: "var(--bg-base)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", position: "relative" }}>
+      {/* Ambient */}
+      <div aria-hidden style={{ pointerEvents: "none", position: "fixed", inset: 0, zIndex: 0,
+        background: "radial-gradient(ellipse 800px 500px at 50% 30%, rgba(91,110,245,0.08) 0%, transparent 60%)" }} />
 
-      <section className="px-6 py-12 lg:py-16">
-        <div className="mx-auto flex max-w-5xl flex-col items-center">
-          <div className="mb-8 max-w-2xl text-center">
-            <span className="inline-flex rounded-full border border-indigo-200 bg-indigo-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.22em] text-indigo-700">
-              Secure Demo Access
-            </span>
-
-            <h2 className="mt-5 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">
-              Login before accessing the assistant
-            </h2>
-
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600">
-              This login screen is for demo consent and access flow. Once logged in,
-              you can use the assistant and upload PDF, TXT, and CSV files.
-            </p>
+      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 28, width: "100%" }}>
+        {/* Brand */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center",
+            background: "linear-gradient(135deg, var(--accent), var(--accent-light))", boxShadow: "0 0 16px rgba(91,110,245,0.4)" }}>
+            <Brain size={15} color="#fff" />
           </div>
-
-          <LoginForm />
+          <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: "-0.04em", color: "var(--text-primary)" }}>
+            Memora <span className="text-gradient">AI</span>
+          </span>
         </div>
-      </section>
+
+        <LoginForm />
+
+        <p style={{ fontSize: 11.5, color: "var(--text-ghost)", textAlign: "center", maxWidth: 360, lineHeight: 1.65 }}>
+          For production use, Gmail access requires OAuth 2.0. This demo flow uses local auth only.
+        </p>
+      </div>
     </main>
   );
 }
