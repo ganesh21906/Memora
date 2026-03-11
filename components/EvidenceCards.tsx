@@ -1,155 +1,101 @@
 "use client";
 
 import { SourceItem } from "@/lib/types";
+import { FileSpreadsheet, FileType2, FileText, Mail, MessageCircle, Search } from "lucide-react";
 
-type EvidenceCardsProps = {
-  sources: SourceItem[];
-};
+type EvidenceCardsProps = { sources: SourceItem[] };
 
-type StyleConfig = {
-  border: string;
+type SourceMeta = {
+  label: string;
+  badgeClass: string;
+  barColor: string;
+  borderColor: string;
   headerBg: string;
-  badge: { bg: string; color: string; border: string };
-  bar: string;
+  icon: React.ReactNode;
 };
 
-const SOURCE_STYLES: Record<string, StyleConfig> = {
-  email: {
-    border: "rgba(239,68,68,0.25)",
-    headerBg: "rgba(239,68,68,0.05)",
-    badge: { bg: "rgba(239,68,68,0.12)", color: "#FCA5A5", border: "rgba(239,68,68,0.3)" },
-    bar: "#DC2626",
-  },
-  csv: {
-    border: "rgba(34,197,94,0.25)",
-    headerBg: "rgba(34,197,94,0.05)",
-    badge: { bg: "rgba(34,197,94,0.12)", color: "#86EFAC", border: "rgba(34,197,94,0.3)" },
-    bar: "#16A34A",
-  },
-  pdf: {
-    border: "rgba(249,115,22,0.25)",
-    headerBg: "rgba(249,115,22,0.05)",
-    badge: { bg: "rgba(249,115,22,0.12)", color: "#FDBA74", border: "rgba(249,115,22,0.3)" },
-    bar: "#EA580C",
-  },
-  text: {
-    border: "rgba(139,92,246,0.25)",
-    headerBg: "rgba(139,92,246,0.05)",
-    badge: { bg: "rgba(139,92,246,0.12)", color: "#C4B5FD", border: "rgba(139,92,246,0.3)" },
-    bar: "#7C3AED",
-  },
-  whatsapp: {
-    border: "rgba(20,184,166,0.25)",
-    headerBg: "rgba(20,184,166,0.05)",
-    badge: { bg: "rgba(20,184,166,0.12)", color: "#5EEAD4", border: "rgba(20,184,166,0.3)" },
-    bar: "#0D9488",
-  },
+const SOURCE_META: Record<string, SourceMeta> = {
+  email:    { label: "EMAIL",    badgeClass: "badge badge-red",    barColor: "#EF4444", borderColor: "rgba(239,68,68,0.22)",    headerBg: "rgba(239,68,68,0.05)",    icon: <Mail size={11} /> },
+  csv:      { label: "CSV",      badgeClass: "badge badge-green",  barColor: "#22C55E", borderColor: "rgba(34,197,94,0.22)",    headerBg: "rgba(34,197,94,0.05)",    icon: <FileSpreadsheet size={11} /> },
+  pdf:      { label: "PDF",      badgeClass: "badge badge-orange", barColor: "#F97316", borderColor: "rgba(249,115,22,0.22)",   headerBg: "rgba(249,115,22,0.05)",   icon: <FileType2 size={11} /> },
+  text:     { label: "TEXT",     badgeClass: "badge badge-violet", barColor: "#8B5CF6", borderColor: "rgba(139,92,246,0.22)",   headerBg: "rgba(139,92,246,0.05)",   icon: <FileText size={11} /> },
+  whatsapp: { label: "WHATSAPP", badgeClass: "badge badge-teal",   barColor: "#14B8A6", borderColor: "rgba(20,184,166,0.22)",   headerBg: "rgba(20,184,166,0.05)",   icon: <MessageCircle size={11} /> },
 };
 
-const FALLBACK_STYLE: StyleConfig = {
-  border: "rgba(255,255,255,0.1)",
-  headerBg: "rgba(255,255,255,0.03)",
-  badge: { bg: "rgba(255,255,255,0.08)", color: "#94A3B8", border: "rgba(255,255,255,0.15)" },
-  bar: "#6366F1",
+const FALLBACK: SourceMeta = {
+  label: "DOC", badgeClass: "badge badge-ghost", barColor: "var(--accent)",
+  borderColor: "rgba(255,255,255,0.1)", headerBg: "rgba(255,255,255,0.03)",
+  icon: <Search size={11} />,
 };
 
-const CONFIDENCE_SCORES = [88, 82, 76, 91, 74, 85, 79, 93];
+const SCORES = [88, 82, 76, 91, 74, 85, 79, 93];
 
 export default function EvidenceCards({ sources }: EvidenceCardsProps) {
-  return (
-    <section
-      className="rounded-2xl p-5"
-      style={{
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <h2 className="mb-4 text-[18px] font-semibold" style={{ color: "#F8FAFC" }}>
-        Evidence Cards
-      </h2>
-      {sources.length === 0 ? (
-        <p className="text-sm" style={{ color: "#94A3B8" }}>
-          No evidence sources returned yet.
-        </p>
-      ) : (
-        <div className="grid gap-4 md:grid-cols-2">
-          {sources.map((source, index) => {
-            const style = SOURCE_STYLES[source.type] ?? FALLBACK_STYLE;
-            const confidence = CONFIDENCE_SCORES[index % CONFIDENCE_SCORES.length];
-            const preview =
-              source.snippet
-                ? source.snippet.slice(0, 100) + (source.snippet.length > 100 ? "…" : "")
-                : source.title;
+  if (sources.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-10 text-center">
+        <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Search size={16} style={{ color: "var(--text-ghost)" }} />
+        </div>
+        <p style={{ fontSize: 12.5, color: "var(--text-muted)" }}>No evidence sources yet</p>
+      </div>
+    );
+  }
 
-            return (
-              <article
-                key={source.id}
-                className="glow-card anim-fade-up flex flex-col overflow-hidden rounded-xl"
-                style={{
-                  background: "rgba(255,255,255,0.025)",
-                  border: `1px solid ${style.border}`,
-                  animationDelay: `${index * 80}ms`,
-                }}
-              >
-                {/* Card header */}
-                <div
-                  className="flex items-center justify-between gap-2 px-4 py-3"
-                  style={{ background: style.headerBg }}
-                >
-                  <h3 className="truncate text-sm font-semibold" style={{ color: "#F8FAFC" }}>
+  return (
+    <div className="space-y-3">
+      <p className="section-label mb-3">Evidence Cards · {sources.length} source{sources.length !== 1 ? "s" : ""}</p>
+      <div className="grid grid-cols-1 gap-2.5">
+        {sources.map((source, i) => {
+          const meta = SOURCE_META[source.type] ?? FALLBACK;
+          const score = SCORES[i % SCORES.length];
+          const preview = source.snippet
+            ? source.snippet.slice(0, 110) + (source.snippet.length > 110 ? "…" : "")
+            : source.title;
+
+          return (
+            <article
+              key={source.id}
+              className="evidence-card"
+              style={{ borderColor: meta.borderColor, animationDelay: `${i * 70}ms` }}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between gap-2 px-3 py-2.5"
+                style={{ background: meta.headerBg, borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <span style={{ color: meta.barColor, flexShrink: 0 }}>{meta.icon}</span>
+                  <span className="truncate" style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-primary)" }}>
                     {source.title}
-                  </h3>
-                  <span
-                    className="flex-shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold uppercase"
-                    style={{
-                      background: style.badge.bg,
-                      color: style.badge.color,
-                      border: `1px solid ${style.badge.border}`,
-                    }}
-                  >
-                    {source.type}
                   </span>
                 </div>
+                <span className={meta.badgeClass}>{meta.label}</span>
+              </div>
 
-                {/* Content preview */}
-                <div className="flex-1 px-4 py-3">
-                  <p className="text-sm leading-6" style={{ color: "#94A3B8" }}>
-                    {preview}
-                  </p>
-                  {source.meta ? (
-                    <p className="mt-2 text-xs" style={{ color: "rgba(148,163,184,0.55)" }}>
-                      {source.meta}
-                    </p>
-                  ) : null}
+              {/* Body */}
+              <div className="px-3 py-2.5">
+                <p style={{ fontSize: 12, lineHeight: 1.65, color: "var(--text-secondary)" }}>{preview}</p>
+                {source.meta && (
+                  <p className="mt-1.5" style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>{source.meta}</p>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="px-3 pb-3">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span style={{ fontSize: 11, color: "var(--text-muted)" }}>1 match found</span>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: meta.barColor }}>{score}% relevance</span>
                 </div>
-
-                {/* Footer: match count + relevance bar */}
-                <div className="px-4 pb-3">
-                  <div className="mb-1.5 flex items-center justify-between">
-                    <span className="text-[11px]" style={{ color: "rgba(148,163,184,0.55)" }}>
-                      1 match found
-                    </span>
-                    <span className="text-[11px]" style={{ color: style.badge.color }}>
-                      {confidence}% relevance
-                    </span>
-                  </div>
+                <div style={{ height: 3, borderRadius: 99, background: "rgba(255,255,255,0.05)", overflow: "hidden" }}>
                   <div
-                    className="h-1 w-full overflow-hidden rounded-full"
-                    style={{ background: "rgba(255,255,255,0.06)" }}
-                  >
-                    <div
-                      className="h-full rounded-full transition-all duration-700"
-                      style={{ width: `${confidence}%`, background: style.bar }}
-                    />
-                  </div>
+                    className="evidence-bar"
+                    style={{ height: "100%", width: `${score}%`, background: meta.barColor, borderRadius: 99, animationDelay: `${i * 70 + 200}ms` }}
+                  />
                 </div>
-              </article>
-            );
-          })}
-        </div>
-      )}
-    </section>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
   );
 }

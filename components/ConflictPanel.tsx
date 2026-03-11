@@ -1,172 +1,86 @@
 "use client";
 
-import { ShieldAlert, ShieldCheck, ArrowRightCircle } from "lucide-react";
+import { ShieldAlert, ShieldCheck, ArrowRight } from "lucide-react";
 import { ConflictItem } from "@/lib/types";
 
-function getSeverityStyle(severity: ConflictItem["severity"]) {
-  switch (severity) {
-    case "high":
-      return {
-        wrapper: "",
-        wrapperStyle: { border: "1px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.05)" },
-        badge: "",
-        badgeStyle: { background: "rgba(239,68,68,0.15)", color: "#FCA5A5", border: "1px solid rgba(239,68,68,0.3)" },
-        text: "",
-        textStyle: { color: "#FCA5A5" },
-      };
-    case "medium":
-      return {
-        wrapper: "",
-        wrapperStyle: { border: "1px solid rgba(251,191,36,0.3)", background: "rgba(251,191,36,0.05)" },
-        badge: "",
-        badgeStyle: { background: "rgba(251,191,36,0.15)", color: "#FDE68A", border: "1px solid rgba(251,191,36,0.3)" },
-        text: "",
-        textStyle: { color: "#FDE68A" },
-      };
-    case "low":
-      return {
-        wrapper: "",
-        wrapperStyle: { border: "1px solid rgba(99,102,241,0.3)", background: "rgba(99,102,241,0.05)" },
-        badge: "",
-        badgeStyle: { background: "rgba(99,102,241,0.15)", color: "#A5B4FC", border: "1px solid rgba(99,102,241,0.3)" },
-        text: "",
-        textStyle: { color: "#A5B4FC" },
-      };
-    default:
-      return {
-        wrapper: "",
-        wrapperStyle: { border: "1px solid rgba(34,197,94,0.25)", background: "rgba(34,197,94,0.04)" },
-        badge: "",
-        badgeStyle: { background: "rgba(34,197,94,0.12)", color: "#86EFAC", border: "1px solid rgba(34,197,94,0.3)" },
-        text: "",
-        textStyle: { color: "#86EFAC" },
-      };
-  }
-}
+const SEV_STYLES = {
+  high:   { wrap: { border: "1px solid rgba(239,68,68,0.25)", background: "rgba(239,68,68,0.04)" }, badge: "badge badge-red",    dot: "#EF4444" },
+  medium: { wrap: { border: "1px solid rgba(245,158,11,0.25)", background: "rgba(245,158,11,0.04)" }, badge: "badge badge-amber", dot: "#F59E0B" },
+  low:    { wrap: { border: "1px solid rgba(91,110,245,0.25)", background: "rgba(91,110,245,0.04)" }, badge: "badge badge-accent", dot: "var(--accent)" },
+  none:   { wrap: { border: "1px solid rgba(34,197,94,0.22)", background: "rgba(34,197,94,0.04)" }, badge: "badge badge-green",  dot: "var(--green)" },
+};
 
-export default function ConflictPanel({
-  conflicts,
-}: {
-  conflicts: ConflictItem[];
-}) {
-  const hasRealConflict = conflicts.some(
-    (item) => item.severity === "high" || item.severity === "medium"
-  );
+export default function ConflictPanel({ conflicts }: { conflicts: ConflictItem[] }) {
+  const hasReal = conflicts.some(c => c.severity === "high" || c.severity === "medium");
+
+  if (conflicts.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-10 text-center">
+        <div style={{ width: 42, height: 42, borderRadius: 10, background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <ShieldCheck size={18} style={{ color: "var(--green)" }} />
+        </div>
+        <div>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#4ADE80" }}>No conflicts detected</p>
+          <p style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 3 }}>All sources are consistent</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <section
-      className="rounded-2xl p-5"
-      style={{
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <div className="mb-5 flex items-center gap-2">
-        {hasRealConflict ? (
-          <ShieldAlert size={18} style={{ color: "#F87171" }} />
-        ) : (
-          <ShieldCheck size={18} style={{ color: "#86EFAC" }} />
-        )}
-        <h2 className="text-[20px] font-semibold" style={{ color: "#F8FAFC" }}>
-          Conflict Addressing Panel
-        </h2>
+    <div className="space-y-3">
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 4 }}>
+        {hasReal
+          ? <ShieldAlert size={14} style={{ color: "#FCA5A5", flexShrink: 0 }} />
+          : <ShieldCheck size={14} style={{ color: "#4ADE80", flexShrink: 0 }} />
+        }
+        <span className="section-label">{conflicts.length} conflict{conflicts.length !== 1 ? "s" : ""} found</span>
       </div>
 
-      {conflicts.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center rounded-xl py-8 text-center"
-          style={{ border: "1px solid rgba(34,197,94,0.25)", background: "rgba(34,197,94,0.05)" }}
-        >
-          <ShieldCheck size={28} className="mb-3" style={{ color: "#86EFAC" }} />
-          <p className="text-sm font-semibold" style={{ color: "#86EFAC" }}>No conflicts detected</p>
-          <p className="mt-1 text-xs" style={{ color: "rgba(134,239,172,0.7)" }}>All your sources are consistent for this query.</p>
-        </div>
-      ) : (
-        <div className="space-y-5">
-        {conflicts.map((item, index) => {
-          const styles = getSeverityStyle(item.severity);
-
-          return (
-            <div
-              key={`${item.title}-${index}`}
-              className="rounded-xl p-5"
-              style={styles.wrapperStyle}
-            >
-              <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h3 className="text-base font-semibold" style={styles.textStyle}>
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 text-sm" style={{ color: "#94A3B8" }}>{item.note}</p>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  <span
-                    className="rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide"
-                    style={styles.badgeStyle}
-                  >
-                    Severity: {item.severity}
-                  </span>
-
-                  <span
-                    className="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide"
-                    style={{ border: "1px solid rgba(255,255,255,0.12)", color: "#94A3B8", background: "rgba(255,255,255,0.05)" }}
-                  >
-                    {item.type}
-                  </span>
-                </div>
+      {conflicts.map((item, i) => {
+        const sev = SEV_STYLES[item.severity] ?? SEV_STYLES.none;
+        return (
+          <div key={`${item.title}-${i}`} className="conflict-card" style={sev.wrap}>
+            {/* Title row */}
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, marginBottom: 10 }}>
+              <div style={{ minWidth: 0 }}>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", marginBottom: 3 }}>{item.title}</p>
+                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{item.note}</p>
               </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                {item.comparison.map((entry) => (
-                  <div
-                    key={`${entry.source}-${entry.value}`}
-                    className="rounded-xl p-4"
-                    style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-                  >
-                    <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#64748B" }}>
-                      {entry.source}
-                    </p>
-                    <p className="mt-2 text-sm leading-6" style={{ color: "#CBD5E1" }}>
-                      {entry.value}
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              <div
-                className="mt-4 rounded-xl p-4"
-                style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-              >
-                <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#64748B" }}>
-                  Likely Latest Truth
-                </p>
-                <p className="mt-2 text-sm leading-6" style={{ color: "#CBD5E1" }}>
-                  {item.likelyLatestTruth}
-                </p>
-              </div>
-
-              <div
-                className="mt-4 rounded-xl p-4"
-                style={{ border: "1px solid rgba(99,102,241,0.25)", background: "rgba(99,102,241,0.06)" }}
-              >
-                <div className="mb-2 flex items-center gap-2">
-                  <ArrowRightCircle size={16} style={{ color: "#818CF8" }} />
-                  <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "#818CF8" }}>
-                    Recommended Next Action
-                  </p>
-                </div>
-                <p className="text-sm leading-6" style={{ color: "#CBD5E1" }}>
-                  {item.recommendedAction}
-                </p>
+              <div style={{ display: "flex", gap: 5, flexShrink: 0, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <span className={sev.badge}>{item.severity}</span>
+                <span className="badge badge-ghost">{item.type}</span>
               </div>
             </div>
-          );
-        })}
-        </div>
-      )}
-    </section>
+
+            {/* Comparison */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
+              {item.comparison.map((entry) => (
+                <div key={`${entry.source}-${entry.value}`}
+                  style={{ borderRadius: 7, padding: "10px 11px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", marginBottom: 5 }}>{entry.source}</p>
+                  <p style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text-secondary)" }}>{entry.value}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Truth */}
+            <div style={{ borderRadius: 7, padding: "9px 11px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", marginBottom: 8 }}>
+              <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", marginBottom: 5 }}>Likely Latest Truth</p>
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6 }}>{item.likelyLatestTruth}</p>
+            </div>
+
+            {/* Action */}
+            <div style={{ borderRadius: 7, padding: "9px 11px", background: "rgba(91,110,245,0.06)", border: "1px solid rgba(91,110,245,0.18)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
+                <ArrowRight size={12} style={{ color: "var(--accent-light)", flexShrink: 0 }} />
+                <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--accent-light)" }}>Recommended Action</p>
+              </div>
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6 }}>{item.recommendedAction}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }

@@ -1,110 +1,53 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { CheckCircle2, BadgeCheck, Wallet, ShieldCheck, Files } from "lucide-react";
 import { StructuredTruth } from "@/lib/types";
 
-export default function StructuredTruthPanel({
-  truth,
-}: {
-  truth: StructuredTruth;
-}) {
+export default function StructuredTruthPanel({ truth }: { truth: StructuredTruth }) {
+  const fields = [
+    { label: "Decision",    val: truth.decision,    icon: <BadgeCheck size={13} /> },
+    { label: "Budget",      val: truth.budget,       icon: <Wallet size={13} /> },
+    { label: "Approved By", val: truth.approvedBy,  icon: <ShieldCheck size={13} /> },
+    { label: "Status",      val: truth.status,       icon: <CheckCircle2 size={13} /> },
+  ];
+
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl p-5"
-      style={{
-        background: "rgba(255,255,255,0.025)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <div className="mb-5 flex items-center gap-2">
-        <CheckCircle2 size={18} style={{ color: "#86EFAC" }} />
-        <h2 className="text-[18px] font-semibold" style={{ color: "#F8FAFC" }}>
-          Structured Truth
-        </h2>
+    <div className="space-y-2.5 anim-fade-up">
+      <p className="section-label mb-3">Structured Truth</p>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        {fields.map(({ label, val, icon }) => (
+          <div key={label} style={{ borderRadius: 9, padding: "11px 12px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, color: "var(--accent-light)" }}>
+              {icon}
+              <span style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>{label}</span>
+            </div>
+            <p style={{ fontSize: 12.5, lineHeight: 1.55, color: "var(--text-secondary)" }}>{val}</p>
+          </div>
+        ))}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <div
-          className="rounded-xl p-4"
-          style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-        >
-          <div className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: "#94A3B8" }}>
-            <BadgeCheck size={16} style={{ color: "#818CF8" }} />
-            Decision
-          </div>
-          <p className="text-sm leading-6" style={{ color: "#CBD5E1" }}>{truth.decision}</p>
+      {/* Evidence */}
+      <div style={{ borderRadius: 9, padding: "11px 12px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, color: "var(--accent-light)" }}>
+          <Files size={13} />
+          <span style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>Evidence</span>
         </div>
-
-        <div
-          className="rounded-xl p-4"
-          style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-        >
-          <div className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: "#94A3B8" }}>
-            <Wallet size={16} style={{ color: "#818CF8" }} />
-            Budget
+        {truth.evidence.length > 0 ? (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
+            {truth.evidence.map((e) => (
+              <span key={e} className="badge badge-accent">{e}</span>
+            ))}
           </div>
-          <p className="text-sm leading-6" style={{ color: "#CBD5E1" }}>{truth.budget}</p>
-        </div>
-
-        <div
-          className="rounded-xl p-4"
-          style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-        >
-          <div className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: "#94A3B8" }}>
-            <ShieldCheck size={16} style={{ color: "#818CF8" }} />
-            Approved By
-          </div>
-          <p className="text-sm leading-6" style={{ color: "#CBD5E1" }}>{truth.approvedBy}</p>
-        </div>
-
-        <div
-          className="rounded-xl p-4"
-          style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-        >
-          <div className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: "#94A3B8" }}>
-            <CheckCircle2 size={16} style={{ color: "#818CF8" }} />
-            Status
-          </div>
-          <p className="text-sm leading-6" style={{ color: "#CBD5E1" }}>{truth.status}</p>
-        </div>
+        ) : (
+          <p style={{ fontSize: 12, color: "var(--text-ghost)" }}>No evidence listed</p>
+        )}
       </div>
 
-      <div
-        className="mt-4 rounded-xl p-4"
-        style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)" }}
-      >
-        <div className="mb-2 flex items-center gap-2 text-sm font-semibold" style={{ color: "#94A3B8" }}>
-          <Files size={16} style={{ color: "#818CF8" }} />
-          Evidence
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {truth.evidence.length > 0 ? (
-            truth.evidence.map((item) => (
-              <span
-                key={item}
-                className="rounded-full px-3 py-1.5 text-xs font-medium"
-                style={{ border: "1px solid rgba(99,102,241,0.3)", background: "rgba(99,102,241,0.08)", color: "#A5B4FC" }}
-              >
-                {item}
-              </span>
-            ))
-          ) : (
-            <span className="text-sm" style={{ color: "#64748B" }}>No evidence listed</span>
-          )}
-        </div>
+      <div style={{ borderRadius: 9, padding: "10px 12px", background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.055)" }}>
+        <span style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>Conflicts: </span>
+        <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{truth.conflicts}</span>
       </div>
-
-      <div
-        className="mt-4 rounded-xl px-4 py-3 text-sm"
-        style={{ border: "1px solid rgba(255,255,255,0.08)", background: "rgba(255,255,255,0.03)", color: "#94A3B8" }}
-      >
-        Conflicts: {truth.conflicts}
-      </div>
-    </motion.section>
+    </div>
   );
 }

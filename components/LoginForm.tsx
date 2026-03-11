@@ -1,13 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
-import { LockKeyhole, Mail, User, ShieldCheck, ArrowRight } from "lucide-react";
+import { LockKeyhole, Mail, User, ShieldCheck, ArrowRight, Brain } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+function InputField({
+  label, type, value, onChange, placeholder, icon,
+}: {
+  label: string; type: string; value: string;
+  onChange: (v: string) => void; placeholder: string; icon: React.ReactNode;
+}) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div>
+      <label style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, fontSize: 12.5, fontWeight: 500, color: "var(--text-secondary)" }}>
+        <span style={{ color: "var(--accent-light)" }}>{icon}</span>
+        {label}
+      </label>
+      <div style={{ position: "relative" }}>
+        <input
+          type={type} value={value}
+          onChange={e => onChange(e.target.value)}
+          placeholder={placeholder}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={{
+            width: "100%", padding: "10px 14px", borderRadius: 10,
+            background: "rgba(255,255,255,0.04)",
+            border: `1px solid ${focused ? "rgba(91,110,245,0.5)" : "rgba(255,255,255,0.09)"}`,
+            color: "var(--text-primary)", fontSize: 13.5, outline: "none",
+            boxShadow: focused ? "0 0 0 3px rgba(91,110,245,0.09)" : "none",
+            transition: "all 150ms ease",
+          }}
+        />
+      </div>
+    </div>
+  );
+}
 
 export default function LoginForm() {
   const router = useRouter();
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,106 +47,67 @@ export default function LoginForm() {
 
   function handleLogin(e: React.FormEvent) {
     e.preventDefault();
-
     if (!name.trim() || !email.trim() || !password.trim() || !accepted) return;
-
-    const demoUser = {
-      name,
-      email,
-      loggedIn: true,
-    };
-
-    localStorage.setItem("demo-auth-user", JSON.stringify(demoUser));
+    localStorage.setItem("demo-auth-user", JSON.stringify({ name, email, loggedIn: true }));
     router.push("/");
   }
 
-  const isDisabled =
-    !name.trim() || !email.trim() || !password.trim() || !accepted;
+  const isDisabled = !name.trim() || !email.trim() || !password.trim() || !accepted;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="glass soft-shadow w-full max-w-xl rounded-3xl border border-white/80 p-8"
-    >
-      <div className="mb-6 text-center">
-        <h1 className="text-2xl font-semibold text-slate-950">
-          Demo Mail Access Login
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          This is a demo-only login. Use a custom password here. For real email
-          access, production systems should use OAuth instead of collecting user passwords.
+    <div className="anim-fade-up" style={{
+      width: "100%", maxWidth: 440, borderRadius: 16, overflow: "hidden",
+      background: "rgba(13,17,23,0.98)", backdropFilter: "blur(20px)",
+      border: "1px solid rgba(255,255,255,0.09)",
+      boxShadow: "0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+    }}>
+      {/* Card header */}
+      <div style={{ padding: "24px 28px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
+        <div style={{ width: 44, height: 44, borderRadius: 12, margin: "0 auto 14px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "linear-gradient(135deg, var(--accent), var(--accent-light))",
+          boxShadow: "0 0 24px rgba(91,110,245,0.35)" }}>
+          <Brain size={20} color="#fff" />
+        </div>
+        <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
+          Sign in to Memora AI
+        </h2>
+        <p style={{ marginTop: 6, fontSize: 12.5, color: "var(--text-muted)", lineHeight: 1.6 }}>
+          Demo access — use any credentials to continue
         </p>
       </div>
 
-      <form onSubmit={handleLogin} className="space-y-5">
-        <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-            <User size={16} />
-            Person Name
-          </label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter person name"
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
-          />
-        </div>
+      {/* Form */}
+      <form onSubmit={handleLogin} style={{ padding: "22px 28px", display: "flex", flexDirection: "column", gap: 14 }}>
+        <InputField label="Your Name" type="text" value={name} onChange={setName} placeholder="Enter your name" icon={<User size={13} />} />
+        <InputField label="Email Address" type="email" value={email} onChange={setEmail} placeholder="Enter email address" icon={<Mail size={13} />} />
+        <InputField label="Password" type="password" value={password} onChange={setPassword} placeholder="Set a demo password" icon={<LockKeyhole size={13} />} />
 
-        <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-            <Mail size={16} />
-            Email Address
-          </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter email address"
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
-          />
-        </div>
+        {/* Consent */}
+        <label style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "11px 13px", borderRadius: 10,
+          background: "rgba(91,110,245,0.05)", border: "1px solid rgba(91,110,245,0.15)", cursor: "pointer" }}>
+          <input type="checkbox" checked={accepted} onChange={e => setAccepted(e.target.checked)}
+            style={{ marginTop: 2, accentColor: "var(--accent)", width: 14, height: 14, flexShrink: 0 }} />
+          <span style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6 }}>
+            I consent to accessing demo data and understand this is a mock frontend login flow.
+          </span>
+        </label>
 
-        <div>
-          <label className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-700">
-            <LockKeyhole size={16} />
-            Custom Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter demo password"
-            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
-          />
-        </div>
-
-        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-          <label className="flex items-start gap-3 text-sm leading-6 text-slate-700">
-            <input
-              type="checkbox"
-              checked={accepted}
-              onChange={(e) => setAccepted(e.target.checked)}
-              className="mt-1 h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300"
-            />
-            <span>
-              I declare that I consent to accessing my mail and demo data for this
-              interface. I understand this is a mock frontend flow.
-            </span>
-          </label>
-        </div>
-
-        <button
-          type="submit"
-          disabled={isDisabled}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-400"
-        >
-          <ShieldCheck size={16} />
-          Login
-          <ArrowRight size={16} />
+        <button type="submit" disabled={isDisabled}
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "11px 18px", borderRadius: 10, border: "none",
+            background: isDisabled ? "rgba(91,110,245,0.25)" : "var(--accent)",
+            color: isDisabled ? "rgba(255,255,255,0.4)" : "#fff",
+            fontSize: 13.5, fontWeight: 600, cursor: isDisabled ? "not-allowed" : "pointer",
+            boxShadow: isDisabled ? "none" : "0 0 16px rgba(91,110,245,0.35)",
+            transition: "all 150ms ease",
+          }}>
+          <ShieldCheck size={15} />
+          Sign in to Memora
+          <ArrowRight size={14} />
         </button>
       </form>
-    </motion.div>
+    </div>
   );
 }

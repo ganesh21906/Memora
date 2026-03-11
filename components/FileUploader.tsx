@@ -2,192 +2,142 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import { FileText, FileSpreadsheet, FileType2, UploadCloud } from "lucide-react";
+import { FileText, FileSpreadsheet, FileType2, UploadCloud, X, Loader2 } from "lucide-react";
 
-type UploadedFile = {
-  name: string;
-  size_bytes: number;
-};
+type UploadedFile = { name: string; size_bytes: number };
+export type SourceStats = { pdf: number; txt: number; csv: number; total: number };
 
-export type SourceStats = {
-  pdf: number;
-  txt: number;
-  csv: number;
-  total: number;
-};
-
-type FileUploaderProps = {
-  onUploaded?: () => void;
-  onStatsChange?: (stats: SourceStats) => void;
-  compact?: boolean;
-};
+type Props = { onUploaded?: () => void; onStatsChange?: (s: SourceStats) => void; compact?: boolean };
 
 function ext(name: string): "pdf" | "txt" | "csv" | "other" {
-  const lower = name.toLowerCase();
-  if (lower.endsWith(".pdf")) return "pdf";
-  if (lower.endsWith(".txt")) return "txt";
-  if (lower.endsWith(".csv")) return "csv";
+  const l = name.toLowerCase();
+  if (l.endsWith(".pdf")) return "pdf";
+  if (l.endsWith(".txt")) return "txt";
+  if (l.endsWith(".csv")) return "csv";
   return "other";
 }
 
-function formatSize(sizeBytes: number): string {
-  const kb = sizeBytes / 1024;
-  if (kb < 1024) return `${kb.toFixed(1)} KB`;
-  return `${(kb / 1024).toFixed(1)} MB`;
+function fmtSize(b: number) {
+  const kb = b / 1024;
+  return kb < 1024 ? `${kb.toFixed(1)} KB` : `${(kb / 1024).toFixed(1)} MB`;
 }
 
-export default function FileUploader({ onUploaded, onStatsChange, compact = false }: FileUploaderProps) {
+const FILE_ICON = { pdf: <FileType2 size={13} />, csv: <FileSpreadsheet size={13} />, txt: <FileText size={13} />, other: <FileText size={13} /> };
+const FILE_COLOR = { pdf: "var(--orange)", csv: "var(--green)", txt: "var(--violet)", other: "var(--text-muted)" };
+
+export default function FileUploader({ onUploaded, onStatsChange, compact = false }: Props) {
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadUploads = useCallback(async () => {
-    const res = await fetch("/api/uploads");
-    if (!res.ok) return;
-    const data = (await res.json()) as { files?: UploadedFile[] };
-    setFiles(data.files ?? []);
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch("/api/uploads");
+      if (!res.ok) return;
+      const data = (await res.json()) as { files?: UploadedFile[] };
+      setFiles(data.files ?? []);
+    } catch { /**/ }
   }, []);
 
-  useEffect(() => {
-    void loadUploads();
-  }, [loadUploads]);
+  useEffect(() => { void load(); }, [load]);
 
-  const onDrop = useCallback(
-    async (accepted: File[]) => {
-      if (accepted.length === 0) return;
-      setUploading(true);
-      setUploadError(null);
-
-      try {
-        for (const file of accepted) {
-          const form = new FormData();
-          form.append("file", file);
-          const res = await fetch("/api/upload", { method: "POST", body: form });
-          if (!res.ok) {
-            const payload = (await res.json().catch(() => ({}))) as { error?: string };
-            throw new Error(payload.error ?? `Upload failed for ${file.name}`);
-          }
+  const onDrop = useCallback(async (accepted: File[]) => {
+    if (!accepted.length) return;
+    setUploading(true); setError(null);
+    try {
+      for (const file of accepted) {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("/api/upload", { method: "POST", body: form });
+        if (!res.ok) {
+          const p = (await res.json().catch(() => ({}))) as { error?: string };
+          throw new Error(p.error ?? `Upload failed: ${file.name}`);
         }
-        await loadUploads();
-        onUploaded?.();
-      } catch (err) {
-        setUploadError(err instanceof Error ? err.message : "Upload failed");
-      } finally {
-        setUploading(false);
       }
-    },
-    [loadUploads, onUploaded]
-  );
+      await load();
+      onUploaded?.();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  }, [load, onUploaded]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "application/pdf": [".pdf"],
-      "text/plain": [".txt"],
-      "text/csv": [".csv"],
-    },
+    accept: { "application/pdf": [".pdf"], "text/plain": [".txt"], "text/csv": [".csv"] },
   });
 
   const counters = useMemo(() => {
-    const pdf = files.filter((f) => ext(f.name) === "pdf").length;
-    const txt = files.filter((f) => ext(f.name) === "txt").length;
-    const csv = files.filter((f) => ext(f.name) === "csv").length;
+    const pdf = files.filter(f => ext(f.name) === "pdf").length;
+    const txt = files.filter(f => ext(f.name) === "txt").length;
+    const csv = files.filter(f => ext(f.name) === "csv").length;
     return { pdf, txt, csv, total: files.length };
   }, [files]);
 
-  useEffect(() => {
-    onStatsChange?.(counters);
-  }, [counters, onStatsChange]);
+  useEffect(() => { onStatsChange?.(counters); }, [counters, onStatsChange]);
+
+  const visible = compact ? files.slice(0, 4) : files;
 
   return (
-    <section
-      className={`rounded-2xl ${compact ? "p-4" : "p-6"}`}
-      style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-      }}
-    >
-      <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-base font-semibold" style={{ color: "#F8FAFC" }}>Upload Data Sources</h2>
-        <span className="text-xs" style={{ color: "#94A3B8" }}>PDF, TXT, CSV</span>
+    <div className="space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <span className="section-label">Upload Sources</span>
+        <span style={{ fontSize: 10.5, color: "var(--text-ghost)" }}>PDF · TXT · CSV</span>
       </div>
 
+      {/* Drop zone */}
       <div
         {...getRootProps()}
-        className={`cursor-pointer rounded-xl border-2 border-dashed text-center transition-all duration-150 ${compact ? "p-4" : "p-6"} ${
-          isDragActive ? "border-brand" : "border-white/10"
-        }`}
-        style={isDragActive ? { background: "rgba(99,102,241,0.08)" } : { background: "rgba(255,255,255,0.03)" }}
+        className={`upload-zone text-center p-4 ${isDragActive ? "drag-active" : ""}`}
       >
         <input {...getInputProps()} />
-        <UploadCloud className={`mx-auto ${compact ? "mb-2" : "mb-3"}`} style={{ color: isDragActive ? "#6366F1" : "#94A3B8" }} />
-        <p className="text-sm font-medium" style={{ color: "#F8FAFC" }}>
-          {isDragActive ? "Drop files to upload" : "Drag and drop files here"}
+        {uploading
+          ? <Loader2 size={18} style={{ color: "var(--accent)", margin: "0 auto 8px", animation: "spin 0.8s linear infinite" }} />
+          : <UploadCloud size={18} style={{ color: isDragActive ? "var(--accent)" : "var(--text-muted)", margin: "0 auto 8px", transition: "color 180ms ease" }} />
+        }
+        <p style={{ fontSize: 12.5, fontWeight: 500, color: isDragActive ? "var(--accent-light)" : "var(--text-secondary)" }}>
+          {uploading ? "Uploading…" : isDragActive ? "Drop to upload" : "Drag & drop files"}
         </p>
-        <p className="mt-1 text-xs" style={{ color: "#64748B" }}>or click to browse</p>
+        <p style={{ fontSize: 11, color: "var(--text-ghost)", marginTop: 2 }}>or click to browse</p>
       </div>
 
-      {/* File type pills — only render when count > 0 */}
-      {(counters.pdf > 0 || counters.txt > 0 || counters.csv > 0) && (
-        <div className="mt-4 flex flex-wrap gap-2">
-          {counters.pdf > 0 && (
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
-              style={{ border: "1px solid rgba(249,115,22,0.35)", color: "#FDBA74", background: "rgba(249,115,22,0.08)" }}
-            >
-              PDF · {counters.pdf}
-            </span>
-          )}
-          {counters.txt > 0 && (
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
-              style={{ border: "1px solid rgba(139,92,246,0.35)", color: "#C4B5FD", background: "rgba(139,92,246,0.08)" }}
-            >
-              TXT · {counters.txt}
-            </span>
-          )}
-          {counters.csv > 0 && (
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold"
-              style={{ border: "1px solid rgba(34,197,94,0.35)", color: "#86EFAC", background: "rgba(34,197,94,0.08)" }}
-            >
-              CSV · {counters.csv}
-            </span>
-          )}
+      {error && (
+        <div style={{ padding: "8px 10px", borderRadius: 8, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)" }}>
+          <p style={{ fontSize: 11.5, color: "#FCA5A5" }}>{error}</p>
         </div>
       )}
 
-      {uploading && <p className="mt-3 text-sm" style={{ color: "#94A3B8" }}>Uploading files…</p>}
-      {uploadError && <p className="mt-3 text-sm" style={{ color: "#F87171" }}>{uploadError}</p>}
+      {/* Type counters */}
+      {(counters.pdf > 0 || counters.txt > 0 || counters.csv > 0) && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {counters.pdf > 0 && <span className="badge badge-orange">{counters.pdf} PDF</span>}
+          {counters.txt > 0 && <span className="badge badge-violet">{counters.txt} TXT</span>}
+          {counters.csv > 0 && <span className="badge badge-green">{counters.csv} CSV</span>}
+        </div>
+      )}
 
-      <div className="mt-4 space-y-2">
-        {files.length === 0 ? (
-          <p className="text-sm" style={{ color: "#64748B" }}>No uploaded files yet.</p>
-        ) : (
-          files.slice(0, compact ? 5 : files.length).map((file) => {
+      {/* File list */}
+      {files.length === 0 ? (
+        <p style={{ fontSize: 12, color: "var(--text-ghost)", padding: "4px 2px" }}>No files uploaded yet</p>
+      ) : (
+        <div className="space-y-1.5">
+          {visible.map((file) => {
             const kind = ext(file.name);
-            const icon = kind === "pdf" ? <FileType2 size={14} /> : kind === "csv" ? <FileSpreadsheet size={14} /> : <FileText size={14} />;
             return (
-              <div
-                key={`${file.name}-${file.size_bytes}`}
-                className="flex items-center justify-between rounded-lg px-3 py-2"
-                style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}
-              >
-                <div className="flex items-center gap-2 text-sm" style={{ color: "#CBD5E1" }}>
-                  <span style={{ color: "#94A3B8" }}>{icon}</span>
-                  <span className="truncate max-w-[140px]">{file.name}</span>
-                </div>
-                <span className="text-xs" style={{ color: "#64748B" }}>{formatSize(file.size_bytes)}</span>
+              <div key={`${file.name}-${file.size_bytes}`} className="file-row">
+                <span style={{ color: FILE_COLOR[kind], flexShrink: 0 }}>{FILE_ICON[kind]}</span>
+                <span className="flex-1 truncate" style={{ fontSize: 12, color: "var(--text-secondary)" }}>{file.name}</span>
+                <span style={{ fontSize: 10.5, color: "var(--text-muted)", fontFamily: "var(--font-mono)", flexShrink: 0 }}>{fmtSize(file.size_bytes)}</span>
               </div>
             );
-          })
-        )}
-        {compact && files.length > 5 ? (
-          <p className="pt-1 text-xs" style={{ color: "#64748B" }}>+{files.length - 5} more files</p>
-        ) : null}
-      </div>
-    </section>
+          })}
+          {compact && files.length > 4 && (
+            <p style={{ fontSize: 11, color: "var(--text-muted)", paddingLeft: 2 }}>+{files.length - 4} more</p>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
