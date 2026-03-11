@@ -40,11 +40,11 @@ const INSIGHT_TABS: { key: InsightTab; label: string; icon: React.ReactNode }[] 
 ];
 
 const DATA_SOURCES = [
-  { name: "PDF Documents", tool: "search_pdf",      color: "var(--c-pdf)",      bg: "rgba(249,115,22,0.08)", bdr: "rgba(249,115,22,0.2)",  icon: <FileType2 size={12} /> },
-  { name: "CSV Files",     tool: "search_csv",      color: "var(--c-csv)",      bg: "rgba(16,185,129,0.08)", bdr: "rgba(16,185,129,0.2)",  icon: <FileSpreadsheet size={12} /> },
-  { name: "Text & Notes",  tool: "search_txt",      color: "var(--c-txt)",      bg: "rgba(139,92,246,0.08)", bdr: "rgba(139,92,246,0.2)",  icon: <FileText size={12} /> },
-  { name: "Gmail / Email", tool: "search_email",    color: "var(--c-email)",    bg: "rgba(239,68,68,0.08)",  bdr: "rgba(239,68,68,0.2)",   icon: <Mail size={12} /> },
-  { name: "WhatsApp",      tool: "search_whatsapp", color: "var(--c-whatsapp)", bg: "rgba(20,184,166,0.08)", bdr: "rgba(20,184,166,0.2)",  icon: <MessageCircle size={12} /> },
+  { name: "PDF Documents", tool: "search_pdf",      color: "#F97316", bg: "rgba(249,115,22,0.08)", bdr: "rgba(249,115,22,0.22)", icon: <FileType2 size={12} /> },
+  { name: "CSV Files",     tool: "search_csv",      color: "#10B981", bg: "rgba(16,185,129,0.08)", bdr: "rgba(16,185,129,0.22)", icon: <FileSpreadsheet size={12} /> },
+  { name: "Text & Notes",  tool: "search_txt",      color: "#8B5CF6", bg: "rgba(139,92,246,0.08)", bdr: "rgba(139,92,246,0.22)", icon: <FileText size={12} /> },
+  { name: "Gmail / Email", tool: "search_email",    color: "#EF4444", bg: "rgba(239,68,68,0.08)",  bdr: "rgba(239,68,68,0.22)",  icon: <Mail size={12} /> },
+  { name: "WhatsApp",      tool: "search_whatsapp", color: "#14B8A6", bg: "rgba(20,184,166,0.08)", bdr: "rgba(20,184,166,0.22)", icon: <MessageCircle size={12} /> },
 ];
 
 function fmtTime(d: Date) { return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
@@ -54,7 +54,7 @@ function fmtTokens(n: number) {
   return String(n);
 }
 
-const SCAN_STEPS = ["Scanning documents…", "Checking emails…", "Analyzing notes…", "Comparing sources…", "Synthesizing answer…"];
+const SCAN_STEPS = ["Scanning documents…","Checking emails…","Analyzing notes…","Comparing sources…","Synthesizing answer…"];
 
 function ThinkingDots() {
   const [step, setStep] = useState(0);
@@ -65,19 +65,29 @@ function ThinkingDots() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
       <div style={{ display: "flex", gap: 4 }}>
-        {[0, 1, 2].map(i => (
-          <span key={i} style={{
-            width: 6, height: 6, borderRadius: "50%",
-            background: "var(--accent)",
-            display: "inline-block",
-            animation: `bounce-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
-          }} />
+        {[0,1,2].map(i => (
+          <span key={i} style={{ width:6, height:6, borderRadius:"50%", background:"#818CF8", display:"inline-block",
+            animation:`bounce-dot 1.2s ease-in-out ${i*0.2}s infinite` }} />
         ))}
       </div>
       <span style={{ fontSize: 12.5, color: "#A5B4FC" }}>{SCAN_STEPS[step]}</span>
     </div>
   );
 }
+
+// Glass surface helpers
+const glass = (opacity = 0.55) => ({
+  background: `rgba(8,11,22,${opacity})`,
+  backdropFilter: "blur(24px) saturate(160%)",
+  WebkitBackdropFilter: "blur(24px) saturate(160%)",
+});
+
+const pill = (color: string, bg: string, border: string) => ({
+  display: "inline-flex", alignItems: "center", gap: 4,
+  padding: "2px 8px", borderRadius: 99,
+  fontSize: 10.5, fontWeight: 600,
+  background: bg, color, border: `1px solid ${border}`,
+});
 
 export default function HomePage() {
   const [query, setQuery] = useState("");
@@ -94,23 +104,20 @@ export default function HomePage() {
   const [showUsage, setShowUsage] = useState(false);
   const [activeUser, setActiveUser] = useState({ name: "Demo User", email: "demo@memora.ai" });
   const [usageData, setUsageData] = useState<UsageData>({
-    prompt_tokens: 0, completion_tokens: 0, total_tokens: 0,
-    requests: 0, model: "llama-3.3-70b-versatile",
-    daily_token_limit: 500_000, daily_request_limit: 14_400,
+    prompt_tokens:0, completion_tokens:0, total_tokens:0,
+    requests:0, model:"llama-3.3-70b-versatile",
+    daily_token_limit:500_000, daily_request_limit:14_400,
   });
-  const [mounted, setMounted] = useState(false);
 
   const menuRef  = useRef<HTMLDivElement>(null);
   const usageRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { setMounted(true); }, []);
-
   useEffect(() => {
     try {
       const raw = localStorage.getItem("demo-auth-user");
       if (raw) {
-        const p = JSON.parse(raw) as { name?: string; email?: string };
+        const p = JSON.parse(raw) as { name?:string; email?:string };
         setActiveUser({ name: p.name ?? "Demo User", email: p.email ?? "demo@memora.ai" });
       }
     } catch { /**/ }
@@ -129,35 +136,27 @@ export default function HomePage() {
   }, [showUsage]);
 
   useEffect(() => {
-    fetch("/api/usage").then(r => r.ok ? r.json() : null).then(d => d && setUsageData(d as UsageData)).catch(() => {});
+    fetch("/api/usage").then(r=>r.ok?r.json():null).then(d=>d&&setUsageData(d as UsageData)).catch(()=>{});
   }, []);
 
-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, loading]);
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior:"smooth" }); }, [messages, loading]);
 
   async function submitQuery(nextQuery?: string) {
     const q = (nextQuery ?? query).trim();
     if (!q) return;
     setLoading(true); setError(null); setQuery("");
     try {
-      const res = await fetch("/api/query", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: q }),
-      });
-      if (!res.ok) {
-        const p = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(p.error ?? "Query failed");
-      }
+      const res = await fetch("/api/query", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query:q}) });
+      if (!res.ok) { const p = (await res.json().catch(()=>({}))) as {error?:string}; throw new Error(p.error ?? "Query failed"); }
       const data = (await res.json()) as QueryResponse;
       const ts = fmtTime(new Date());
-      setMessages(prev => [...prev, { q, r: data, time: ts }]);
-      setResponse(data);
-      setTotalQueries(prev => prev + 1);
-      setRecentQueries(prev => [{ q, t: ts }, ...prev.filter(x => x.q !== q)].slice(0, 10));
+      setMessages(prev => [...prev, { q, r:data, time:ts }]);
+      setResponse(data); setTotalQueries(prev=>prev+1);
+      setRecentQueries(prev => [{q,t:ts},...prev.filter(x=>x.q!==q)].slice(0,10));
       setInsightTab("evidence");
-      try { const ur = await fetch("/api/usage"); if (ur.ok) setUsageData(await ur.json() as UsageData); } catch { /**/ }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unexpected error");
-    } finally { setLoading(false); }
+      try { const ur=await fetch("/api/usage"); if(ur.ok) setUsageData(await ur.json() as UsageData); } catch{/**/ }
+    } catch(err) { setError(err instanceof Error ? err.message : "Unexpected error"); }
+    finally { setLoading(false); }
   }
 
   function handleLogout() {
@@ -167,180 +166,180 @@ export default function HomePage() {
 
   const sourceUsed = new Set(response?.toolUsed ?? []);
   const tokenPct = Math.min(100, (usageData.total_tokens / usageData.daily_token_limit) * 100);
-  const tokenBarColor = tokenPct > 80 ? "var(--c-email)" : tokenPct > 50 ? "#F59E0B" : "var(--accent)";
+  const tokenColor = tokenPct > 80 ? "#EF4444" : tokenPct > 50 ? "#F59E0B" : "#818CF8";
+
+  // Dropdown shared style
+  const dropdownStyle: React.CSSProperties = {
+    position:"absolute", right:0, top:"calc(100% + 10px)", zIndex:50,
+    borderRadius:14, overflow:"hidden",
+    background:"rgba(6,8,18,0.96)", backdropFilter:"blur(32px)",
+    WebkitBackdropFilter:"blur(32px)",
+    border:"1px solid rgba(255,255,255,0.12)",
+    boxShadow:"0 24px 60px rgba(0,0,0,0.7)",
+  };
 
   function renderInsight() {
     switch (insightTab) {
       case "evidence":  return <EvidenceCards sources={response?.sources ?? []} />;
       case "conflicts": return <ConflictPanel conflicts={response?.conflictsPanel ?? []} />;
       case "truth":
-        return response?.structuredTruth
-          ? <StructuredTruthPanel truth={response.structuredTruth} />
-          : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
-              <div style={{ width: 42, height: 42, borderRadius: 11, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <CheckCircle2 size={16} style={{ color: "var(--txt-4)" }} />
-              </div>
-              <p style={{ fontSize: 12, color: "var(--txt-3)" }}>Ask a question to extract structured facts</p>
-            </div>
-          );
+        return response?.structuredTruth ? <StructuredTruthPanel truth={response.structuredTruth} /> : (
+          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:10, padding:"32px 12px", textAlign:"center" }}>
+            <CheckCircle2 size={20} style={{ color:"rgba(255,255,255,0.12)" }} />
+            <p style={{ fontSize:12, color:"rgba(255,255,255,0.25)" }}>Ask a question to extract structured facts</p>
+          </div>
+        );
       case "summary":
         return (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <p className="sec-label" style={{ marginBottom: 3 }}>Session Overview</p>
+          <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+            <p style={{ fontSize:10, fontWeight:700, letterSpacing:"0.09em", textTransform:"uppercase", color:"rgba(255,255,255,0.2)", marginBottom:4 }}>Session Overview</p>
             {[
-              { label: "Total Queries", val: totalQueries },
-              { label: "Files Indexed", val: sourceStats.total },
-              { label: "Sources Used",  val: (response?.toolUsed ?? []).length },
-              { label: "Tokens Used",   val: fmtTokens(usageData.total_tokens) },
-            ].map(({ label, val }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <span style={{ fontSize: 12.5, color: "var(--txt-3)" }}>{label}</span>
-                <span style={{ fontSize: 15, fontWeight: 700, color: "#A5B4FC", fontFamily: "monospace" }}>{val}</span>
+              { label:"Total Queries", val: String(totalQueries) },
+              { label:"Files Indexed", val: String(sourceStats.total) },
+              { label:"Sources Used",  val: String((response?.toolUsed ?? []).length) },
+              { label:"Tokens Used",   val: fmtTokens(usageData.total_tokens) },
+            ].map(({label,val}) => (
+              <div key={label} style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"9px 12px", borderRadius:10, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)" }}>
+                <span style={{ fontSize:12.5, color:"rgba(255,255,255,0.4)" }}>{label}</span>
+                <span style={{ fontSize:15, fontWeight:700, color:"#A5B4FC" }}>{val}</span>
               </div>
             ))}
-            {(response?.toolUsed ?? []).length > 0 && (
-              <div style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                <p className="sec-label" style={{ marginBottom: 8 }}>Sources Searched</p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {(response?.toolUsed ?? []).map(t => (
-                    <span key={t} className="pill pill-accent">{t.replace("search_", "").toUpperCase()}</span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         );
     }
   }
 
-  if (!mounted) return null;
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", background: "var(--space-1)", position: "relative" }}>
+    <div style={{ display:"flex", flexDirection:"column", width:"100vw", height:"100vh", overflow:"hidden", background:"#03040A", position:"relative" }}>
 
-      {/* ── AURORA BACKGROUND ─────────────────────────────── */}
-      <div className="aurora-bg" aria-hidden>
-        <div className="aurora-blob aurora-blob-1" />
-        <div className="aurora-blob aurora-blob-2" />
-        <div className="aurora-blob aurora-blob-3" />
-        <div className="aurora-blob aurora-blob-4" />
+      {/* ── AURORA ──────────────────────────────────────────── */}
+      <div aria-hidden style={{ position:"fixed", inset:0, zIndex:0, overflow:"hidden", pointerEvents:"none" }}>
+        <div style={{ position:"absolute", width:700, height:700, top:-200, left:-100, borderRadius:"50%",
+          background:"radial-gradient(circle, #7C3AED 0%, transparent 70%)",
+          filter:"blur(80px)", opacity:0.18, mixBlendMode:"screen",
+          animation:"aurora-drift 18s ease-in-out infinite" }} />
+        <div style={{ position:"absolute", width:600, height:600, top:"10%", right:-150, borderRadius:"50%",
+          background:"radial-gradient(circle, #0891B2 0%, transparent 70%)",
+          filter:"blur(80px)", opacity:0.12, mixBlendMode:"screen",
+          animation:"aurora-drift-2 22s ease-in-out infinite" }} />
+        <div style={{ position:"absolute", width:500, height:500, bottom:-100, left:"30%", borderRadius:"50%",
+          background:"radial-gradient(circle, #4F46E5 0%, transparent 70%)",
+          filter:"blur(80px)", opacity:0.14, mixBlendMode:"screen",
+          animation:"aurora-drift 26s ease-in-out infinite reverse" }} />
+        <div style={{ position:"absolute", width:400, height:400, bottom:"20%", right:"10%", borderRadius:"50%",
+          background:"radial-gradient(circle, #BE185D 0%, transparent 70%)",
+          filter:"blur(80px)", opacity:0.08, mixBlendMode:"screen",
+          animation:"aurora-drift-2 20s ease-in-out infinite" }} />
+        {/* fine grid */}
+        <div style={{ position:"absolute", inset:0,
+          backgroundImage:"linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)",
+          backgroundSize:"48px 48px" }} />
       </div>
 
-      {/* ── TOPBAR ────────────────────────────────────────── */}
-      <header
-        className="topbar-glass anim-fade-in"
-        style={{ position: "relative", zIndex: 20, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", flexShrink: 0 }}
-      >
+      {/* ── TOPBAR ──────────────────────────────────────────── */}
+      <header style={{
+        position:"relative", zIndex:20, height:52, flexShrink:0,
+        display:"flex", alignItems:"center", justifyContent:"space-between", padding:"0 20px",
+        ...glass(0.80),
+        borderBottom:"1px solid rgba(255,255,255,0.07)",
+        animation:"fadeUp 400ms ease both",
+      }}>
         {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: 11 }} className="anim-float-up d-0">
-          <div style={{
-            width: 30, height: 30, borderRadius: 9,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            background: "linear-gradient(135deg, #6366F1, #A78BFA)",
-            boxShadow: "0 0 16px rgba(99,102,241,0.5), 0 0 4px rgba(167,139,250,0.3)",
-          }}>
+        <div style={{ display:"flex", alignItems:"center", gap:11 }}>
+          <div style={{ width:30, height:30, borderRadius:9, display:"flex", alignItems:"center", justifyContent:"center",
+            background:"linear-gradient(135deg,#6366F1,#A78BFA)",
+            boxShadow:"0 0 18px rgba(99,102,241,0.55), 0 0 4px rgba(167,139,250,0.3)" }}>
             <Brain size={14} color="#fff" />
           </div>
-          <span style={{ fontSize: 17, fontWeight: 800, letterSpacing: "-0.04em", fontFamily: "var(--font-display)", color: "var(--txt-1)" }}>
-            Memora <span className="grad-text">AI</span>
+          <span style={{ fontSize:17, fontWeight:800, letterSpacing:"-0.04em", fontFamily:"Syne,sans-serif", color:"#F8FAFF" }}>
+            Memora{" "}
+            <span style={{ background:"linear-gradient(135deg,#818CF8,#C084FC)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>AI</span>
           </span>
-          <span className="pill pill-accent" style={{ marginLeft: 2 }}>Personal Executive</span>
+          <span style={{ ...pill("#A5B4FC","rgba(99,102,241,0.15)","rgba(99,102,241,0.3)"), marginLeft:2 }}>Personal Executive</span>
         </div>
 
         {/* Right */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }} className="anim-float-up d-1">
+        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
           {/* Online */}
-          <div className="status-online-badge">
-            <span className="status-dot" />
-            <span style={{ fontSize: 11, fontWeight: 500, color: "#6EE7B7" }}>Online</span>
+          <div style={{ display:"flex", alignItems:"center", gap:6, padding:"4px 11px", borderRadius:99,
+            background:"rgba(16,185,129,0.08)", border:"1px solid rgba(16,185,129,0.20)" }}>
+            <span style={{ width:6, height:6, borderRadius:"50%", background:"#10B981", boxShadow:"0 0 6px #10B981",
+              animation:"status-pulse 2.5s ease-in-out infinite", display:"inline-block" }} />
+            <span style={{ fontSize:11, fontWeight:500, color:"#6EE7B7" }}>Online</span>
           </div>
 
           {/* Usage */}
-          <div ref={usageRef} style={{ position: "relative" }}>
-            <button
-              onClick={() => setShowUsage(v => !v)}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 11px", borderRadius: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "var(--txt-3)", transition: "all 150ms ease", backdropFilter: "blur(8px)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.14)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.09)"; }}
-            >
-              <Activity size={12} style={{ color: "#A5B4FC" }} />
-              <span style={{ fontSize: 11.5, fontFamily: "monospace" }}>{fmtTokens(usageData.total_tokens)}</span>
-              <span style={{ fontSize: 11, color: "var(--txt-4)" }}>tokens</span>
+          <div ref={usageRef} style={{ position:"relative" }}>
+            <button onClick={() => setShowUsage(v=>!v)}
+              style={{ display:"flex", alignItems:"center", gap:6, padding:"5px 11px", borderRadius:9,
+                background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)",
+                color:"rgba(255,255,255,0.4)", cursor:"pointer", transition:"all 150ms ease" }}
+              onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.07)"}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.04)"}}>
+              <Activity size={12} style={{ color:"#A5B4FC" }} />
+              <span style={{ fontSize:11.5, fontFamily:"monospace" }}>{fmtTokens(usageData.total_tokens)}</span>
+              <span style={{ fontSize:11, color:"rgba(255,255,255,0.2)" }}>tokens</span>
             </button>
-
             {showUsage && (
-              <div className="anim-float-up" style={{
-                position: "absolute", right: 0, top: "calc(100% + 10px)", zIndex: 50,
-                width: 250, borderRadius: 14, overflow: "hidden",
-                background: "rgba(6,8,18,0.92)", backdropFilter: "blur(32px) saturate(180%)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                boxShadow: "0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05)",
-              }}>
-                <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "var(--txt-1)", fontFamily: "var(--font-display)" }}>API Usage</p>
-                  <p style={{ fontSize: 11, color: "var(--txt-3)", marginTop: 2, fontFamily: "monospace" }}>{usageData.model}</p>
+              <div style={{ ...dropdownStyle, width:248 }}>
+                <div style={{ padding:"13px 16px", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:"#F8FAFF", fontFamily:"Syne,sans-serif" }}>API Usage</p>
+                  <p style={{ fontSize:11, color:"rgba(255,255,255,0.3)", marginTop:2, fontFamily:"monospace" }}>{usageData.model}</p>
                 </div>
-                <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 11 }}>
+                <div style={{ padding:14, display:"flex", flexDirection:"column", gap:11 }}>
                   <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                      <span style={{ fontSize: 11, color: "var(--txt-3)" }}>Tokens</span>
-                      <span style={{ fontSize: 11.5, fontWeight: 600, fontFamily: "monospace", color: "#A5B4FC" }}>
-                        {fmtTokens(usageData.total_tokens)} <span style={{ color: "var(--txt-4)" }}>/ {fmtTokens(usageData.daily_token_limit)}</span>
+                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:6 }}>
+                      <span style={{ fontSize:11, color:"rgba(255,255,255,0.35)" }}>Tokens</span>
+                      <span style={{ fontSize:11.5, fontWeight:600, fontFamily:"monospace", color:"#A5B4FC" }}>
+                        {fmtTokens(usageData.total_tokens)} <span style={{ color:"rgba(255,255,255,0.2)" }}>/ {fmtTokens(usageData.daily_token_limit)}</span>
                       </span>
                     </div>
-                    <div style={{ height: 4, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                      <div style={{ height: "100%", borderRadius: 99, width: `${tokenPct}%`, background: tokenBarColor, transition: "width 600ms ease", boxShadow: `0 0 8px ${tokenBarColor}` }} />
+                    <div style={{ height:4, borderRadius:99, background:"rgba(255,255,255,0.06)", overflow:"hidden" }}>
+                      <div style={{ height:"100%", borderRadius:99, width:`${tokenPct}%`, background:tokenColor, boxShadow:`0 0 8px ${tokenColor}` }} />
                     </div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
-                    {[{ l: "Prompt", v: usageData.prompt_tokens }, { l: "Response", v: usageData.completion_tokens }].map(({ l, v }) => (
-                      <div key={l} style={{ borderRadius: 9, padding: "8px 10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-                        <p style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--txt-4)", marginBottom: 4 }}>{l}</p>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: "var(--txt-2)", fontFamily: "monospace" }}>{fmtTokens(v)}</p>
+                  <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:7 }}>
+                    {[{l:"Prompt",v:usageData.prompt_tokens},{l:"Response",v:usageData.completion_tokens}].map(({l,v})=>(
+                      <div key={l} style={{ borderRadius:9, padding:"8px 10px", background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)" }}>
+                        <p style={{ fontSize:10, textTransform:"uppercase", letterSpacing:"0.07em", color:"rgba(255,255,255,0.2)", marginBottom:4 }}>{l}</p>
+                        <p style={{ fontSize:14, fontWeight:700, color:"rgba(255,255,255,0.6)", fontFamily:"monospace" }}>{fmtTokens(v)}</p>
                       </div>
                     ))}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 10px", borderRadius: 9, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                    <span style={{ fontSize: 12, color: "var(--txt-3)" }}>Requests</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--txt-2)", fontFamily: "monospace" }}>{usageData.requests} / {usageData.daily_request_limit.toLocaleString()}</span>
-                  </div>
-                  <p style={{ fontSize: 10.5, textAlign: "center", color: "var(--txt-4)" }}>Groq free tier · resets daily</p>
+                  <p style={{ fontSize:10.5, textAlign:"center", color:"rgba(255,255,255,0.15)" }}>Groq free tier · resets daily</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Avatar */}
-          <div ref={menuRef} style={{ position: "relative" }}>
-            <button
-              onClick={() => setShowUserMenu(v => !v)}
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 11px", borderRadius: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", transition: "all 150ms ease", backdropFilter: "blur(8px)" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; }}
-            >
-              <div className="avatar-glass" style={{ width: 22, height: 22, fontSize: 10 }}>{activeUser.name.charAt(0).toUpperCase()}</div>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--txt-2)" }}>{activeUser.name}</span>
-              <ChevronDown size={10} style={{ color: "var(--txt-4)" }} />
+          <div ref={menuRef} style={{ position:"relative" }}>
+            <button onClick={() => setShowUserMenu(v=>!v)}
+              style={{ display:"flex", alignItems:"center", gap:8, padding:"5px 11px", borderRadius:9,
+                background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.09)",
+                cursor:"pointer", transition:"all 150ms ease" }}
+              onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.07)"}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(255,255,255,0.04)"}}>
+              <div style={{ width:22, height:22, borderRadius:"50%", background:"linear-gradient(135deg,#6366F1,#A78BFA)",
+                display:"flex", alignItems:"center", justifyContent:"center", fontSize:10, fontWeight:700, color:"#fff",
+                boxShadow:"0 0 10px rgba(99,102,241,0.4)", flexShrink:0 }}>
+                {activeUser.name.charAt(0).toUpperCase()}
+              </div>
+              <span style={{ fontSize:12, fontWeight:500, color:"rgba(255,255,255,0.6)" }}>{activeUser.name}</span>
+              <ChevronDown size={10} style={{ color:"rgba(255,255,255,0.2)" }} />
             </button>
-
             {showUserMenu && (
-              <div className="anim-float-up" style={{
-                position: "absolute", right: 0, top: "calc(100% + 10px)", zIndex: 50,
-                width: 210, borderRadius: 14, overflow: "hidden",
-                background: "rgba(6,8,18,0.92)", backdropFilter: "blur(32px)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                boxShadow: "0 24px 60px rgba(0,0,0,0.7)",
-              }}>
-                <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "var(--txt-1)", fontFamily: "var(--font-display)" }}>{activeUser.name}</p>
-                  <p style={{ fontSize: 11.5, color: "var(--txt-3)", marginTop: 2 }}>{activeUser.email}</p>
+              <div style={{ ...dropdownStyle, width:210 }}>
+                <div style={{ padding:"13px 16px", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+                  <p style={{ fontSize:13, fontWeight:700, color:"#F8FAFF", fontFamily:"Syne,sans-serif" }}>{activeUser.name}</p>
+                  <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.3)", marginTop:2 }}>{activeUser.email}</p>
                 </div>
-                <div style={{ padding: 6 }}>
+                <div style={{ padding:6 }}>
                   <button onClick={handleLogout}
-                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: "transparent", border: "none", color: "#FCA5A5", fontSize: 13, transition: "background 140ms ease" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}>
+                    style={{ width:"100%", display:"flex", alignItems:"center", gap:8, padding:"8px 10px",
+                      borderRadius:8, background:"transparent", border:"none", color:"#FCA5A5", fontSize:13, cursor:"pointer" }}
+                    onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.background="rgba(239,68,68,0.08)"}}
+                    onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.background="transparent"}}>
                     <LogOut size={12} /> Sign out
                   </button>
                 </div>
@@ -350,59 +349,69 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* ── 3-COLUMN BODY ──────────────────────────────────── */}
-      <div style={{ position: "relative", zIndex: 10, display: "flex", flex: 1, overflow: "hidden", minHeight: 0 }}>
+      {/* ── 3-COL BODY ──────────────────────────────────────── */}
+      <div style={{ position:"relative", zIndex:10, display:"flex", flex:1, minHeight:0, overflow:"hidden" }}>
 
         {/* ── LEFT SIDEBAR ────────────────────────────────── */}
-        <aside
-          className="sidebar-glass hide-below-lg anim-slide-left"
-          style={{ width: 262, flexShrink: 0, flexDirection: "column", overflow: "hidden" }}
-        >
-          {/* Tab toggle */}
-          <div style={{ flexShrink: 0, padding: "14px 14px 10px" }}>
-            <div className="tab-bar-glass">
-              {(["sources", "history"] as LeftTab[]).map(t => (
-                <button key={t} className={`tab-btn ${leftTab === t ? "active" : ""}`} onClick={() => setLeftTab(t)}>
-                  {t === "sources" ? <><Database size={11} />Data Hub</> : <><History size={11} />History</>}
+        <aside style={{
+          width:262, flexShrink:0, display:"flex", flexDirection:"column", overflow:"hidden",
+          ...glass(0.65),
+          borderRight:"1px solid rgba(255,255,255,0.07)",
+          animation:"slideLeft 450ms cubic-bezier(0.16,1,0.3,1) both",
+        }}>
+          {/* Tab bar */}
+          <div style={{ flexShrink:0, padding:"13px 13px 9px" }}>
+            <div style={{ display:"flex", gap:2, padding:3, background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.07)", borderRadius:11 }}>
+              {(["sources","history"] as LeftTab[]).map(t => (
+                <button key={t} onClick={() => setLeftTab(t)}
+                  style={{ flex:1, padding:"6px 10px", borderRadius:8, fontSize:12, fontWeight:500,
+                    display:"flex", alignItems:"center", justifyContent:"center", gap:5,
+                    border: leftTab===t ? "1px solid rgba(99,102,241,0.28)" : "none",
+                    background: leftTab===t ? "rgba(99,102,241,0.18)" : "transparent",
+                    color: leftTab===t ? "#A5B4FC" : "rgba(255,255,255,0.25)",
+                    cursor:"pointer", transition:"all 150ms ease",
+                    boxShadow: leftTab===t ? "0 0 12px rgba(99,102,241,0.15)" : "none" }}>
+                  {t==="sources" ? <><Database size={11}/>Data Hub</> : <><History size={11}/>History</>}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Scrollable content */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "4px 14px 14px", display: "flex", flexDirection: "column", gap: 16 }}>
-            {leftTab === "sources" ? (
+          {/* Scrollable */}
+          <div style={{ flex:1, overflowY:"auto", padding:"4px 13px 13px", display:"flex", flexDirection:"column", gap:16 }}>
+            {leftTab==="sources" ? (
               <>
                 <FileUploader compact onStatsChange={setSourceStats} />
-
-                {/* Divider */}
-                <div style={{ height: 1, background: "rgba(255,255,255,0.05)" }} />
+                <div style={{ height:1, background:"rgba(255,255,255,0.05)" }} />
 
                 {/* Connected sources */}
                 <div>
-                  <p className="sec-label" style={{ marginBottom: 9 }}>Connected Sources</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <p style={{ fontSize:10, fontWeight:700, letterSpacing:"0.09em", textTransform:"uppercase", color:"rgba(255,255,255,0.2)", marginBottom:9 }}>Connected Sources</p>
+                  <div style={{ display:"flex", flexDirection:"column", gap:2 }}>
                     {DATA_SOURCES.map(src => {
                       const active = sourceUsed.has(src.tool);
                       return (
-                        <div key={src.name} className={`source-row-glass ${active ? "used" : ""}`}>
-                          <div style={{
-                            width: 28, height: 28, borderRadius: 8, flexShrink: 0,
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            background: active ? `${src.bg}` : "rgba(255,255,255,0.04)",
-                            border: `1px solid ${active ? src.bdr : "rgba(255,255,255,0.08)"}`,
-                            color: active ? src.color : "var(--txt-4)",
-                            transition: "all 220ms ease",
+                        <div key={src.name} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 10px", borderRadius:10,
+                          background: active ? src.bg : "transparent",
+                          border:`1px solid ${active ? src.bdr : "transparent"}`,
+                          transition:"all 200ms ease" }}>
+                          <div style={{ width:28, height:28, borderRadius:8, flexShrink:0,
+                            display:"flex", alignItems:"center", justifyContent:"center",
+                            background: active ? src.bg : "rgba(255,255,255,0.04)",
+                            border:`1px solid ${active ? src.bdr : "rgba(255,255,255,0.08)"}`,
+                            color: active ? src.color : "rgba(255,255,255,0.2)",
                             boxShadow: active ? `0 0 10px ${src.bg}` : "none",
-                          }}>
+                            transition:"all 220ms ease" }}>
                             {src.icon}
                           </div>
-                          <span style={{ flex: 1, fontSize: 12, fontWeight: 500, color: active ? "var(--txt-2)" : "var(--txt-4)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                          <span style={{ flex:1, fontSize:12, fontWeight:500,
+                            color: active ? "rgba(255,255,255,0.75)" : "rgba(255,255,255,0.25)",
+                            overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>
                             {src.name}
                           </span>
                           {active
-                            ? <span className="pill" style={{ background: src.bg, color: src.color, borderColor: src.bdr, flexShrink: 0 }}>Used</span>
-                            : <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(255,255,255,0.08)", flexShrink: 0 }} />
+                            ? <span style={{ ...pill(src.color, src.bg, src.bdr), flexShrink:0 }}>Used</span>
+                            : <span style={{ width:5, height:5, borderRadius:"50%", background:"rgba(255,255,255,0.08)", flexShrink:0, display:"inline-block" }} />
                           }
                         </div>
                       );
@@ -411,30 +420,35 @@ export default function HomePage() {
                 </div>
 
                 {/* Stats */}
-                <div style={{ display: "flex", gap: 7 }}>
-                  {[{ label: "Queries", val: totalQueries }, { label: "Files", val: sourceStats.total }].map(({ label, val }) => (
-                    <div key={label} className="stat-glass">
-                      <span style={{ fontSize: 10, color: "var(--txt-4)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-display)" }}>{label}</span>
-                      <span style={{ fontSize: 22, fontWeight: 800, color: "#A5B4FC", fontFamily: "var(--font-display)", lineHeight: 1, textShadow: "0 0 20px rgba(99,102,241,0.5)" }}>{val}</span>
+                <div style={{ display:"flex", gap:7 }}>
+                  {[{label:"Queries", val:String(totalQueries)},{label:"Files", val:String(sourceStats.total)}].map(({label,val})=>(
+                    <div key={label} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2,
+                      padding:"11px 10px", background:"rgba(255,255,255,0.03)",
+                      border:"1px solid rgba(255,255,255,0.07)", borderRadius:12 }}>
+                      <span style={{ fontSize:10, color:"rgba(255,255,255,0.2)", textTransform:"uppercase", letterSpacing:"0.08em" }}>{label}</span>
+                      <span style={{ fontSize:24, fontWeight:800, color:"#A5B4FC", lineHeight:1,
+                        textShadow:"0 0 20px rgba(99,102,241,0.5)", fontFamily:"Syne,sans-serif" }}>{val}</span>
                     </div>
                   ))}
                 </div>
               </>
             ) : (
-              /* History */
-              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <p className="sec-label" style={{ marginBottom: 4 }}>Recent Queries</p>
-                {recentQueries.length === 0 ? (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
-                    <History size={24} style={{ color: "var(--txt-4)" }} />
-                    <p style={{ fontSize: 12, color: "var(--txt-3)" }}>Your history will appear here</p>
+              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <p style={{ fontSize:10, fontWeight:700, letterSpacing:"0.09em", textTransform:"uppercase", color:"rgba(255,255,255,0.2)", marginBottom:4 }}>Recent Queries</p>
+                {recentQueries.length===0 ? (
+                  <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:10, padding:"32px 12px", textAlign:"center" }}>
+                    <History size={24} style={{ color:"rgba(255,255,255,0.1)" }} />
+                    <p style={{ fontSize:12, color:"rgba(255,255,255,0.25)" }}>Your history will appear here</p>
                   </div>
-                ) : recentQueries.map(({ q, t }) => (
+                ) : recentQueries.map(({q,t})=>(
                   <button key={q} onClick={() => void submitQuery(q)}
-                    className="glass-card"
-                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 11 }}>
-                    <p style={{ fontSize: 12, color: "var(--txt-2)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{q}</p>
-                    <p style={{ fontSize: 10.5, color: "var(--txt-4)", marginTop: 3, fontFamily: "monospace" }}>{t}</p>
+                    style={{ display:"block", width:"100%", textAlign:"left", padding:"10px 12px", borderRadius:11,
+                      background:"rgba(255,255,255,0.025)", border:"1px solid rgba(255,255,255,0.07)",
+                      cursor:"pointer", transition:"all 140ms ease" }}
+                    onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor="rgba(255,255,255,0.12)"}}
+                    onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.borderColor="rgba(255,255,255,0.07)"}}>
+                    <p style={{ fontSize:12, color:"rgba(255,255,255,0.55)", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>{q}</p>
+                    <p style={{ fontSize:10.5, color:"rgba(255,255,255,0.2)", marginTop:3 }}>{t}</p>
                   </button>
                 ))}
               </div>
@@ -442,20 +456,23 @@ export default function HomePage() {
           </div>
 
           {/* User footer */}
-          <div style={{ flexShrink: 0, padding: "11px 14px", borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.2)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div className="avatar-glass" style={{ width: 30, height: 30, fontSize: 12 }}>{activeUser.name.charAt(0).toUpperCase()}</div>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--txt-2)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{activeUser.name}</p>
-                <p style={{ fontSize: 10.5, color: "var(--txt-4)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{activeUser.email}</p>
+          <div style={{ flexShrink:0, padding:"11px 13px", borderTop:"1px solid rgba(255,255,255,0.07)", background:"rgba(0,0,0,0.2)" }}>
+            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+              <div style={{ width:30, height:30, borderRadius:"50%", background:"linear-gradient(135deg,#6366F1,#A78BFA)",
+                display:"flex", alignItems:"center", justifyContent:"center", fontSize:12, fontWeight:700, color:"#fff",
+                boxShadow:"0 0 12px rgba(99,102,241,0.4)", flexShrink:0 }}>
+                {activeUser.name.charAt(0).toUpperCase()}
               </div>
-              <button
-                onClick={handleLogout}
-                style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 7, border: "none", background: "transparent", color: "var(--txt-3)", transition: "all 150ms ease" }}
-                title="Sign out"
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.1)"; (e.currentTarget as HTMLButtonElement).style.color = "#FCA5A5"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "var(--txt-3)"; }}
-              >
+              <div style={{ flex:1, minWidth:0 }}>
+                <p style={{ fontSize:12.5, fontWeight:600, color:"rgba(255,255,255,0.65)", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>{activeUser.name}</p>
+                <p style={{ fontSize:10.5, color:"rgba(255,255,255,0.25)", overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis" }}>{activeUser.email}</p>
+              </div>
+              <button onClick={handleLogout}
+                style={{ width:28, height:28, borderRadius:7, border:"none", background:"transparent",
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  color:"rgba(255,255,255,0.25)", cursor:"pointer", transition:"all 150ms ease" }}
+                onMouseEnter={e=>{(e.currentTarget as HTMLButtonElement).style.color="#FCA5A5";(e.currentTarget as HTMLButtonElement).style.background="rgba(239,68,68,0.1)"}}
+                onMouseLeave={e=>{(e.currentTarget as HTMLButtonElement).style.color="rgba(255,255,255,0.25)";(e.currentTarget as HTMLButtonElement).style.background="transparent"}}>
                 <LogOut size={13} />
               </button>
             </div>
@@ -463,55 +480,62 @@ export default function HomePage() {
         </aside>
 
         {/* ── CENTER CHAT ──────────────────────────────────── */}
-        <main className="anim-fade-in" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            <div style={{ maxWidth: 800, margin: "0 auto", padding: "32px 28px", display: "flex", flexDirection: "column" }}>
+        <main style={{ flex:1, minWidth:0, display:"flex", flexDirection:"column", overflow:"hidden",
+          animation:"fadeUp 500ms ease both" }}>
+          <div style={{ flex:1, overflowY:"auto" }}>
+            <div style={{ maxWidth:800, margin:"0 auto", padding:"32px 28px" }}>
 
               {/* Welcome */}
-              {messages.length === 0 && !loading && (
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "28px 0 36px", textAlign: "center" }}>
-                  {/* Glowing brain icon */}
-                  <div className="anim-float-up d-0" style={{
-                    width: 72, height: 72, borderRadius: 22,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "linear-gradient(135deg, rgba(99,102,241,0.3), rgba(167,139,250,0.2))",
-                    border: "1px solid rgba(99,102,241,0.35)",
-                    backdropFilter: "blur(16px)",
-                    boxShadow: "0 0 40px rgba(99,102,241,0.3), 0 0 80px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.1)",
-                    animation: "glow-pulse 3s ease-in-out infinite",
-                  }}>
-                    <Brain size={30} style={{ color: "#A5B4FC" }} />
+              {messages.length===0 && !loading && (
+                <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:24, padding:"20px 0 32px", textAlign:"center" }}>
+                  {/* Pulsing brain */}
+                  <div style={{ width:72, height:72, borderRadius:22,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    background:"linear-gradient(135deg,rgba(99,102,241,0.28),rgba(167,139,250,0.18))",
+                    border:"1px solid rgba(99,102,241,0.35)",
+                    backdropFilter:"blur(16px)",
+                    boxShadow:"0 0 40px rgba(99,102,241,0.3),0 0 80px rgba(99,102,241,0.1),inset 0 1px 0 rgba(255,255,255,0.1)",
+                    animation:"glowPulse 3s ease-in-out infinite" }}>
+                    <Brain size={30} style={{ color:"#A5B4FC" }} />
                   </div>
 
-                  <div className="anim-float-up d-1">
-                    <h1 style={{ fontSize: 28, fontWeight: 800, color: "var(--txt-1)", letterSpacing: "-0.04em", lineHeight: 1.15, marginBottom: 10, fontFamily: "var(--font-display)" }}>
+                  <div>
+                    <h1 style={{ fontSize:30, fontWeight:800, color:"#F8FAFF", letterSpacing:"-0.04em", lineHeight:1.15, marginBottom:12, fontFamily:"Syne,sans-serif" }}>
                       What would you like<br />
-                      <span className="grad-text">to remember?</span>
+                      <span style={{ background:"linear-gradient(135deg,#818CF8,#C084FC)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>
+                        to remember?
+                      </span>
                     </h1>
-                    <p style={{ fontSize: 15, color: "var(--txt-3)", maxWidth: 420, margin: "0 auto", lineHeight: 1.6 }}>
+                    <p style={{ fontSize:15, color:"rgba(255,255,255,0.35)", maxWidth:420, margin:"0 auto", lineHeight:1.65 }}>
                       Ask anything across your emails, documents, notes, and data files.
                     </p>
                   </div>
 
                   {/* Example cards */}
-                  <div className="anim-float-up d-2" style={{ width: "100%", maxWidth: 580 }}>
-                    <p className="sec-label" style={{ marginBottom: 12 }}>Try asking</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-                      {EXAMPLES.map((eq, i) => (
-                        <button
-                          key={eq}
-                          onClick={() => void submitQuery(eq)}
-                          className="glass-card"
-                          style={{
-                            textAlign: "left", padding: "12px 14px",
-                            background: "rgba(255,255,255,0.03)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            borderRadius: 12,
-                            animationDelay: `${i * 50}ms`,
+                  <div style={{ width:"100%", maxWidth:580 }}>
+                    <p style={{ fontSize:10, fontWeight:700, letterSpacing:"0.09em", textTransform:"uppercase", color:"rgba(255,255,255,0.2)", marginBottom:12 }}>Try asking</p>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8 }}>
+                      {EXAMPLES.map((eq,i)=>(
+                        <button key={eq} onClick={()=>void submitQuery(eq)}
+                          style={{ textAlign:"left", padding:"12px 14px", borderRadius:13,
+                            background:"rgba(255,255,255,0.03)", border:"1px solid rgba(255,255,255,0.08)",
+                            cursor:"pointer", transition:"all 150ms ease",
+                            backdropFilter:"blur(12px)",
+                            animationDelay:`${i*50}ms` }}
+                          onMouseEnter={e=>{
+                            const b=e.currentTarget as HTMLButtonElement;
+                            b.style.background="rgba(255,255,255,0.06)";
+                            b.style.borderColor="rgba(255,255,255,0.14)";
+                            b.style.transform="translateY(-1px)";
                           }}
-                        >
-                          <span style={{ color: "var(--accent)", marginRight: 7, fontWeight: 700 }}>→</span>
-                          <span style={{ fontSize: 12.5, color: "var(--txt-3)" }}>{eq}</span>
+                          onMouseLeave={e=>{
+                            const b=e.currentTarget as HTMLButtonElement;
+                            b.style.background="rgba(255,255,255,0.03)";
+                            b.style.borderColor="rgba(255,255,255,0.08)";
+                            b.style.transform="";
+                          }}>
+                          <span style={{ color:"#818CF8", marginRight:7, fontWeight:700 }}>→</span>
+                          <span style={{ fontSize:12.5, color:"rgba(255,255,255,0.4)" }}>{eq}</span>
                         </button>
                       ))}
                     </div>
@@ -519,27 +543,29 @@ export default function HomePage() {
                 </div>
               )}
 
-              {/* Thread */}
-              {messages.map(({ q, r, time }, idx) => (
-                <div key={idx} className="anim-float-up" style={{ marginBottom: 22, display: "flex", flexDirection: "column", gap: 10, animationDelay: `${idx * 20}ms` }}>
-                  {/* User bubble */}
-                  <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <div className="bubble-user" style={{ maxWidth: "72%", padding: "11px 15px" }}>
-                      <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--txt-1)" }}>{q}</p>
-                      <p style={{ marginTop: 5, textAlign: "right", fontSize: 10.5, color: "rgba(165,180,252,0.5)", fontFamily: "monospace" }}>{time}</p>
+              {/* Message thread */}
+              {messages.map(({q,r,time},idx)=>(
+                <div key={idx} style={{ marginBottom:22, display:"flex", flexDirection:"column", gap:10,
+                  animation:"fadeUp 380ms ease both", animationDelay:`${idx*20}ms` }}>
+                  {/* User */}
+                  <div style={{ display:"flex", justifyContent:"flex-end" }}>
+                    <div style={{ maxWidth:"72%", padding:"11px 15px",
+                      background:"rgba(99,102,241,0.16)", backdropFilter:"blur(12px)",
+                      border:"1px solid rgba(99,102,241,0.28)", borderRadius:"18px 18px 4px 18px",
+                      boxShadow:"0 4px 20px rgba(99,102,241,0.12)" }}>
+                      <p style={{ fontSize:14, lineHeight:1.65, color:"#F8FAFF" }}>{q}</p>
+                      <p style={{ marginTop:5, textAlign:"right", fontSize:10.5, color:"rgba(165,180,252,0.45)" }}>{time}</p>
                     </div>
                   </div>
-                  {/* AI bubble */}
-                  <div style={{ display: "flex", gap: 11 }}>
-                    <div style={{
-                      marginTop: 2, width: 28, height: 28, borderRadius: 9, flexShrink: 0,
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      background: "linear-gradient(135deg, #6366F1, #A78BFA)",
-                      boxShadow: "0 0 10px rgba(99,102,241,0.4)",
-                    }}>
+                  {/* AI */}
+                  <div style={{ display:"flex", gap:11 }}>
+                    <div style={{ marginTop:2, width:28, height:28, borderRadius:9, flexShrink:0,
+                      display:"flex", alignItems:"center", justifyContent:"center",
+                      background:"linear-gradient(135deg,#6366F1,#A78BFA)",
+                      boxShadow:"0 0 10px rgba(99,102,241,0.4)" }}>
                       <Brain size={13} color="#fff" />
                     </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ flex:1, minWidth:0 }}>
                       <AnswerPanel response={r} loading={false} error={null} compact />
                     </div>
                   </div>
@@ -548,71 +574,79 @@ export default function HomePage() {
 
               {/* Thinking */}
               {loading && (
-                <div className="anim-float-up" style={{ display: "flex", gap: 11, marginBottom: 22 }}>
-                  <div style={{ marginTop: 2, width: 28, height: 28, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #6366F1, #A78BFA)", boxShadow: "0 0 10px rgba(99,102,241,0.4)" }}>
+                <div style={{ display:"flex", gap:11, marginBottom:22, animation:"fadeUp 380ms ease both" }}>
+                  <div style={{ marginTop:2, width:28, height:28, borderRadius:9, flexShrink:0,
+                    display:"flex", alignItems:"center", justifyContent:"center",
+                    background:"linear-gradient(135deg,#6366F1,#A78BFA)",
+                    boxShadow:"0 0 10px rgba(99,102,241,0.4)" }}>
                     <Brain size={13} color="#fff" />
                   </div>
-                  <div className="bubble-ai" style={{ flex: 1, padding: "12px 15px" }}>
+                  <div style={{ flex:1, padding:"12px 15px",
+                    background:"rgba(255,255,255,0.04)", backdropFilter:"blur(16px)",
+                    border:"1px solid rgba(255,255,255,0.09)", borderLeft:"2px solid rgba(99,102,241,0.5)",
+                    borderRadius:"4px 18px 18px 18px" }}>
                     <ThinkingDots />
                   </div>
                 </div>
               )}
 
               {error && (
-                <div style={{ padding: "11px 14px", borderRadius: 11, background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.22)", marginBottom: 18, backdropFilter: "blur(8px)" }}>
-                  <p style={{ fontSize: 13, color: "#FCA5A5" }}>{error}</p>
+                <div style={{ padding:"11px 14px", borderRadius:11, marginBottom:18,
+                  background:"rgba(239,68,68,0.07)", border:"1px solid rgba(239,68,68,0.22)", backdropFilter:"blur(8px)" }}>
+                  <p style={{ fontSize:13, color:"#FCA5A5" }}>{error}</p>
                 </div>
               )}
-
               <div ref={chatEndRef} />
             </div>
           </div>
 
           {/* Input */}
-          <div style={{
-            flexShrink: 0, padding: "12px 28px 20px",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-            background: "rgba(5,7,16,0.6)", backdropFilter: "blur(20px)",
-          }}>
-            <div style={{ maxWidth: 800, margin: "0 auto" }}>
+          <div style={{ flexShrink:0, padding:"12px 28px 20px",
+            borderTop:"1px solid rgba(255,255,255,0.06)",
+            background:"rgba(5,7,16,0.7)", backdropFilter:"blur(20px)" }}>
+            <div style={{ maxWidth:800, margin:"0 auto" }}>
               <QueryInput value={query} onChange={setQuery} onSubmit={() => void submitQuery()} loading={loading} />
             </div>
           </div>
         </main>
 
-        {/* ── RIGHT INSIGHTS PANEL ─────────────────────────── */}
-        <aside
-          className="sidebar-glass-right hide-below-xl anim-slide-right"
-          style={{ width: 304, flexShrink: 0, flexDirection: "column", overflow: "hidden" }}
-        >
+        {/* ── RIGHT PANEL ──────────────────────────────────── */}
+        <aside style={{
+          width:300, flexShrink:0, display:"flex", flexDirection:"column", overflow:"hidden",
+          ...glass(0.65),
+          borderLeft:"1px solid rgba(255,255,255,0.07)",
+          animation:"slideRight 450ms cubic-bezier(0.16,1,0.3,1) both",
+        }}>
           {/* Header */}
-          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 9, padding: "15px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-            <MessageSquareText size={14} style={{ color: "var(--accent)" }} />
-            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--txt-2)", fontFamily: "var(--font-display)" }}>Insights &amp; Verification</span>
+          <div style={{ flexShrink:0, display:"flex", alignItems:"center", gap:9, padding:"15px 16px", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+            <MessageSquareText size={14} style={{ color:"#818CF8" }} />
+            <span style={{ fontSize:13, fontWeight:700, color:"rgba(255,255,255,0.55)", fontFamily:"Syne,sans-serif" }}>Insights &amp; Verification</span>
           </div>
 
-          {/* Tabs */}
-          <div className="insight-tabs-bar" style={{ flexShrink: 0 }}>
-            {INSIGHT_TABS.map(({ key, label, icon }) => (
-              <button key={key} className={`insight-tab-btn ${insightTab === key ? "active" : ""}`} onClick={() => setInsightTab(key)}>
+          {/* Insight tabs */}
+          <div style={{ flexShrink:0, display:"flex", borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"0 4px" }}>
+            {INSIGHT_TABS.map(({key,label,icon})=>(
+              <button key={key} onClick={()=>setInsightTab(key)}
+                style={{ flex:1, padding:"10px 6px", fontSize:11.5, fontWeight:500, background:"transparent", border:"none",
+                  borderBottom: insightTab===key ? "2px solid #6366F1" : "2px solid transparent",
+                  marginBottom:-1, display:"flex", alignItems:"center", justifyContent:"center", gap:5,
+                  color: insightTab===key ? "#A5B4FC" : "rgba(255,255,255,0.22)",
+                  cursor:"pointer", transition:"all 150ms ease",
+                  textShadow: insightTab===key ? "0 0 12px rgba(99,102,241,0.5)" : "none" }}>
                 {icon} {label}
               </button>
             ))}
           </div>
 
           {/* Content */}
-          <div style={{ flex: 1, overflowY: "auto", padding: 14 }}>
+          <div style={{ flex:1, overflowY:"auto", padding:14 }}>
             {!response && !loading ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "36px 12px", textAlign: "center" }}>
-                <div style={{
-                  width: 50, height: 50, borderRadius: 14,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.14)",
-                  backdropFilter: "blur(8px)",
-                }}>
-                  <Sparkles size={20} style={{ color: "var(--txt-4)" }} />
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:12, padding:"36px 12px", textAlign:"center" }}>
+                <div style={{ width:50, height:50, borderRadius:14, display:"flex", alignItems:"center", justifyContent:"center",
+                  background:"rgba(99,102,241,0.07)", border:"1px solid rgba(99,102,241,0.14)", backdropFilter:"blur(8px)" }}>
+                  <Sparkles size={20} style={{ color:"rgba(255,255,255,0.15)" }} />
                 </div>
-                <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "var(--txt-3)", maxWidth: 200 }}>
+                <p style={{ fontSize:12.5, lineHeight:1.7, color:"rgba(255,255,255,0.25)", maxWidth:200 }}>
                   Evidence, conflicts, and structured facts appear after your first query
                 </p>
               </div>
@@ -621,15 +655,19 @@ export default function HomePage() {
 
           {/* Stats footer */}
           {response && (
-            <div style={{ flexShrink: 0, display: "flex", gap: 7, padding: "11px 14px", borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.25)" }}>
+            <div style={{ flexShrink:0, display:"flex", gap:7, padding:"11px 14px",
+              borderTop:"1px solid rgba(255,255,255,0.07)", background:"rgba(0,0,0,0.25)" }}>
               {[
-                { label: "Sources",   val: response.sources?.length ?? 0,         color: "#A5B4FC" },
-                { label: "Conflicts", val: (response.conflictsPanel ?? []).length, color: (response.conflictsPanel ?? []).length > 0 ? "#FCD34D" : "var(--txt-3)" },
-                { label: "Tools",     val: (response.toolUsed ?? []).length,       color: "#A5B4FC" },
-              ].map(({ label, val, color }) => (
-                <div key={label} className="stat-glass">
-                  <span style={{ fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--txt-4)", fontFamily: "var(--font-display)" }}>{label}</span>
-                  <span style={{ fontSize: 18, fontWeight: 800, color, fontFamily: "var(--font-display)", lineHeight: 1, textShadow: `0 0 16px ${color}55` }}>{val}</span>
+                { label:"Sources",   val:String(response.sources?.length ?? 0),          color:"#A5B4FC" },
+                { label:"Conflicts", val:String((response.conflictsPanel??[]).length),   color:(response.conflictsPanel??[]).length>0 ? "#FCD34D" : "rgba(255,255,255,0.2)" },
+                { label:"Tools",     val:String((response.toolUsed??[]).length),          color:"#A5B4FC" },
+              ].map(({label,val,color})=>(
+                <div key={label} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2,
+                  padding:"9px 8px", background:"rgba(255,255,255,0.025)",
+                  border:"1px solid rgba(255,255,255,0.07)", borderRadius:10 }}>
+                  <span style={{ fontSize:9.5, textTransform:"uppercase", letterSpacing:"0.08em", color:"rgba(255,255,255,0.2)" }}>{label}</span>
+                  <span style={{ fontSize:18, fontWeight:800, color, lineHeight:1, fontFamily:"Syne,sans-serif",
+                    textShadow:`0 0 16px ${color}55` }}>{val}</span>
                 </div>
               ))}
             </div>
