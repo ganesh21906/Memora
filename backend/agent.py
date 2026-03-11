@@ -22,6 +22,20 @@ from backend.tools.attachment_parser import search_attachments
 from backend.tools.whatsapp_search import search_whatsapp
 
 
+# ── Session Usage Tracking ────────────────────────────────────────────────────
+_session_usage: dict[str, int] = {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0,
+    "requests": 0,
+}
+
+
+def get_session_usage() -> dict[str, int]:
+    """Return a copy of the accumulated session token usage."""
+    return dict(_session_usage)
+
+
 # ── Tool Registry ─────────────────────────────────────────────────────────────
 TOOL_FUNCTIONS: dict[str, Any] = {
     "search_email":       search_email,
@@ -207,27 +221,7 @@ def run_agent(query: str) -> dict[str, Any]:
     start = time.time()
 
     # ── Step 1: Run all tools in parallel ────────────────────────────────────
-    tool_results: dict[str, str] = {}
-    live_mode = not settings.use_demo_mode
-
-    active_tools = {
-        name: fn for name, fn in TOOL_FUNCTIONS.items()
-        if live_mode or name not in _LIVE_ONLY
-    }
-
-    with ThreadPoolExecutor(max_workers=len(active_tools)) as executor:
-        future_to_name = {
-            executor.submit(fn, query): name
-            for name, fn in active_tools.items()
-        }
-        for future in as_completed(future_to_name):
-            name = future_to_name[future]
-            try:
-                tool_results[name] = future.result()
-            except Exception as exc:
-                tool_results[name] = f"[Tool error in {name}: {exc}]"
-
-    tools_called = list(tool_results.keys())
+    tool_results, tools_called = run_tools(query)
 
     # ── Step 2: Build context — skip empty results ────────────────────────────
     sections: list[str] = []
@@ -253,6 +247,13 @@ def run_agent(query: str) -> dict[str, Any]:
         temperature=0.1,
     )
 
+    # Track token usage
+    if response.usage:
+        _session_usage["prompt_tokens"] += response.usage.prompt_tokens or 0
+        _session_usage["completion_tokens"] += response.usage.completion_tokens or 0
+        _session_usage["total_tokens"] += response.usage.total_tokens or 0
+    _session_usage["requests"] += 1
+
     raw = response.choices[0].message.content or '{"answer": "I could not find a relevant answer."}'
     parsed = _parse_llm_json(raw)
 
@@ -271,3 +272,43 @@ def run_agent(query: str) -> dict[str, Any]:
         "structured_truth": parsed.get("structured_truth", {}),
         "conflicts":        conflicts,
     }
+
+
+def run_tools(query: str, tools: list[str] | None = None) -> tuple[dict[str, str], list[str]]:
+    """Run selected tools in parallel and return `(tool_results, tools_called)`.
+
+    Args:
+        query: User query text.
+        tools: Optional explicit list of tool names to run. If omitted, all active
+            tools are run (respecting demo/live mode constraints).
+    """
+    live_mode = not settings.use_demo_mode
+
+    active_tools = {
+        name: fn for name, fn in TOOL_FUNCTIONS.items()
+        if live_mode or name not in _LIVE_ONLY
+    }
+
+    if tools:
+        requested = [name for name in tools if name in active_tools]
+        selected = {name: active_tools[name] for name in requested}
+    else:
+        selected = active_tools
+
+    if not selected:
+        return {}, []
+
+    tool_results: dict[str, str] = {}
+    with ThreadPoolExecutor(max_workers=len(selected)) as executor:
+        future_to_name = {
+            executor.submit(fn, query): name
+            for name, fn in selected.items()
+        }
+        for future in as_completed(future_to_name):
+            name = future_to_name[future]
+            try:
+                tool_results[name] = future.result()
+            except Exception as exc:
+                tool_results[name] = f"[Tool error in {name}: {exc}]"
+
+    return tool_results, list(tool_results.keys())

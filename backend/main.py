@@ -4,6 +4,7 @@ Exposes /query, /upload, /health, /reindex, and /vector/status endpoints.
 """
 from __future__ import annotations
 
+import time
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +62,18 @@ class UploadResponse(BaseModel):
     message: str
 
 
+class SearchRequest(BaseModel):
+    query: str
+    tools: list[str] | None = None
+
+
+class SearchResponse(BaseModel):
+    query: str
+    tools_called: list[str]
+    tool_results: dict[str, str]
+    elapsed_seconds: float
+
+
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @app.get("/health")
@@ -70,6 +83,20 @@ def health() -> dict[str, Any]:
         "status": "ok",
         "mode": "demo" if settings.use_demo_mode else "live",
         "model": settings.llm_model,
+    }
+
+
+@app.get("/usage")
+def usage_endpoint() -> dict[str, Any]:
+    """Return accumulated session token usage for the API widget."""
+    from backend.agent import get_session_usage
+    data = get_session_usage()
+    return {
+        **data,
+        "model": settings.llm_model,
+        # Groq free-tier limits for llama-3.3-70b-versatile
+        "daily_token_limit": 500_000,
+        "daily_request_limit": 14_400,
     }
 
 
@@ -115,6 +142,55 @@ def query_endpoint(req: QueryRequest) -> QueryResponse:
         mode="demo" if settings.use_demo_mode else "live",
         structured_truth=result.get("structured_truth", {}),
         conflicts=result.get("conflicts", []),
+    )
+
+
+@app.post("/search", response_model=SearchResponse)
+def search_endpoint(req: SearchRequest) -> SearchResponse:
+    """Run specific search tools and return raw per-tool outputs.
+
+    Supports both canonical and friendly aliases for tool names:
+    - search_notes -> search_txt
+    - notes -> search_txt
+    - pdf -> search_pdf
+    - csv -> search_csv
+    - email -> search_email
+    """
+    if not req.query.strip():
+        raise HTTPException(status_code=400, detail="Query cannot be empty.")
+
+    aliases = {
+        "search_notes": "search_txt",
+        "notes": "search_txt",
+        "pdf": "search_pdf",
+        "csv": "search_csv",
+        "email": "search_email",
+        "attachments": "search_attachments",
+        "whatsapp": "search_whatsapp",
+    }
+
+    normalized_tools: list[str] | None = None
+    if req.tools:
+        normalized_tools = []
+        for tool in req.tools:
+            mapped = aliases.get(tool, tool)
+            if mapped not in normalized_tools:
+                normalized_tools.append(mapped)
+
+    try:
+        from backend.agent import run_tools
+        start = time.time()
+        tool_results, tools_called = run_tools(req.query, normalized_tools)
+    except EnvironmentError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search tool error: {e}")
+
+    return SearchResponse(
+        query=req.query,
+        tools_called=tools_called,
+        tool_results=tool_results,
+        elapsed_seconds=round(time.time() - start, 2),
     )
 
 

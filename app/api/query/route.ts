@@ -35,6 +35,59 @@ function mapStructuredTruth(st: Record<string, unknown>): StructuredTruth | unde
   return { decision, budget, approvedBy, evidence, status, conflicts };
 }
 
+function isNA(value: string): boolean {
+  const v = value.trim().toLowerCase();
+  return v === "n/a" || v === "na" || v === "none" || v === "";
+}
+
+function pickDecision(answer: string, evidence: string[]): string {
+  if (evidence.length > 0) return evidence[0];
+  const firstSentence = answer.split(/[.!?]/).map((s) => s.trim()).find(Boolean);
+  return firstSentence || "N/A";
+}
+
+function pickBudget(text: string): string {
+  const currencyMatch = text.match(/(?:₹|\$|€|£)\s?\d[\d,]*(?:\.\d+)?(?:\s?[kKmM])?/);
+  if (currencyMatch) return currencyMatch[0];
+
+  const plusMatch = text.match(/\b\d[\d,]*(?:\.\d+)?\+\s*(?:in\s+)?(?:prizes?|budget|cost|spend)\b/i);
+  if (plusMatch) return plusMatch[0];
+
+  return "N/A";
+}
+
+function pickStatus(text: string): string {
+  const t = text.toLowerCase();
+  if (t.includes("last call")) return "Last call / Action needed";
+  if (t.includes("upcoming")) return "Upcoming";
+  if (t.includes("ongoing") || t.includes("in progress")) return "In progress";
+  if (t.includes("completed") || t.includes("finalized") || t.includes("done")) return "Completed";
+  if (t.includes("pending")) return "Pending";
+  return "N/A";
+}
+
+function enrichStructuredTruth(base: StructuredTruth | undefined, answer: string): StructuredTruth | undefined {
+  if (!base) return base;
+
+  const evidence = Array.isArray(base.evidence) ? base.evidence : [];
+  const combinedText = [answer, ...evidence].join("\n");
+
+  const decision = isNA(base.decision) ? pickDecision(answer, evidence) : base.decision;
+  const budget = isNA(base.budget) ? pickBudget(combinedText) : base.budget;
+  const status = isNA(base.status) ? pickStatus(combinedText) : base.status;
+  const approvedBy = isNA(base.approvedBy)
+    ? "Not explicitly stated in retrieved sources"
+    : base.approvedBy;
+
+  return {
+    ...base,
+    decision,
+    budget,
+    status,
+    approvedBy,
+  };
+}
+
 function mapConflicts(raw: unknown[]): ConflictItem[] {
   if (!Array.isArray(raw) || raw.length === 0) return [];
   return raw.map((c) => {
@@ -219,7 +272,10 @@ function adaptResponse(backendData: {
     status: hasAnswer ? "success" : "empty",
     elapsedSeconds: backendData.elapsed_seconds,
     followUpSuggestions: hasAnswer ? generateFollowUps(query, backendData.tools_called) : [],
-    structuredTruth: mapStructuredTruth(backendData.structured_truth ?? {}),
+    structuredTruth: enrichStructuredTruth(
+      mapStructuredTruth(backendData.structured_truth ?? {}),
+      sanitizeAnswer(backendData.answer)
+    ),
     conflictsPanel: (() => {
       const fromBackend = mapConflicts(backendData.conflicts ?? []);
       if (fromBackend.length > 0) return fromBackend;

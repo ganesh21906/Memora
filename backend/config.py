@@ -14,10 +14,15 @@ load_dotenv(_project_root / ".env", override=False)
 
 
 class Settings:
-    # LLM — any OpenAI-compatible provider (Groq, Gemini, OpenAI, Ollama…)
-    llm_api_key: str = os.getenv("LLM_API_KEY", "")
-    llm_model: str = os.getenv("LLM_MODEL", "llama-3.3-70b-versatile")
-    llm_base_url: str = os.getenv("LLM_BASE_URL", "https://api.groq.com/openai/v1/")
+    # LLM — OpenAI-compatible providers (Gemini/OpenAI/Groq/Ollama...)
+    # Gemini can be used via OpenAI-compatible endpoint:
+    # https://generativelanguage.googleapis.com/v1beta/openai/
+    llm_api_key: str = os.getenv("LLM_API_KEY", os.getenv("GEMINI_API_KEY", ""))
+    llm_model: str = os.getenv("LLM_MODEL", os.getenv("GEMINI_MODEL", "gemini-2.0-flash"))
+    llm_base_url: str = os.getenv(
+        "LLM_BASE_URL",
+        "https://generativelanguage.googleapis.com/v1beta/openai/",
+    )
 
     # Mode
     use_demo_mode: bool = os.getenv("USE_DEMO_MODE", "true").lower() == "true"
@@ -43,7 +48,7 @@ class Settings:
         """Raise if critical env vars are missing."""
         if not self.llm_api_key:
             raise EnvironmentError(
-                "LLM_API_KEY is not set. Add your Groq/Gemini/OpenAI key to .env."
+                "LLM_API_KEY is not set. Add LLM_API_KEY (or GEMINI_API_KEY) to .env."
             )
 
 
