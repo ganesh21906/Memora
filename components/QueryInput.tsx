@@ -1,55 +1,76 @@
 "use client";
 
-import { useRef, KeyboardEvent } from "react";
+import { useRef, KeyboardEvent, useState } from "react";
 import { Send, Loader2 } from "lucide-react";
 
-type QueryInputProps = {
+type Props = {
   value: string;
-  onChange: (value: string) => void;
+  onChange: (v: string) => void;
   onSubmit: () => void;
   loading?: boolean;
-  examples?: string[];
-  onExampleClick?: (query: string) => void;
 };
 
-export default function QueryInput({ value, onChange, onSubmit, loading }: QueryInputProps) {
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function QueryInput({ value, onChange, onSubmit, loading }: Props) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [focused, setFocused] = useState(false);
+  const canSend = !loading && !!value.trim();
 
   function handleKey(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (!loading && value.trim()) onSubmit();
+      if (canSend) onSubmit();
     }
   }
 
-  const canSubmit = !loading && !!value.trim();
-
   return (
     <form
-      onSubmit={(e) => { e.preventDefault(); if (canSubmit) onSubmit(); }}
-      className="input-bar flex items-center gap-3 px-4 py-2.5"
+      onSubmit={e => { e.preventDefault(); if (canSend) onSubmit(); }}
+      className="input-glass"
+      style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px" }}
     >
       <input
-        ref={inputRef}
+        ref={ref}
         type="text"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={e => onChange(e.target.value)}
         onKeyDown={handleKey}
-        placeholder="Ask Memora anything…"
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        placeholder={focused ? "" : "Ask Memora anything…"}
         disabled={loading}
-        className="flex-1 bg-transparent text-[14px] leading-tight outline-none"
-        style={{ color: "var(--text-primary)", caretColor: "var(--accent-light)" }}
         autoComplete="off"
         spellCheck={false}
+        style={{
+          flex: 1,
+          background: "transparent",
+          border: "none",
+          outline: "none",
+          fontSize: 14,
+          color: "var(--txt-1)",
+          caretColor: "var(--accent)",
+        }}
+        className={focused && !value ? "typing-cursor" : ""}
       />
+      {/* Animated placeholder when focused + empty */}
+      {focused && !value && (
+        <span
+          style={{
+            position: "absolute",
+            pointerEvents: "none",
+            fontSize: 14,
+            color: "var(--txt-4)",
+            marginLeft: 14,
+          }}
+        />
+      )}
       <button
         type="submit"
-        disabled={!canSubmit}
-        className={`btn-send ${canSubmit ? "active" : "inactive"}`}
+        disabled={!canSend}
+        className={`send-btn ${canSend ? "ready" : "idle"}`}
       >
         {loading
-          ? <Loader2 size={14} style={{ animation: "spin 0.8s linear infinite" }} />
-          : <Send size={14} />
+          ? <Loader2 size={15} style={{ animation: "spin 0.8s linear infinite" }} />
+          : <Send size={15} />
         }
       </button>
     </form>

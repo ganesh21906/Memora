@@ -5,7 +5,7 @@ import {
   Activity, BarChart3, Brain, ChevronDown, Database,
   FileSpreadsheet, FileText, FileType2, History, LogOut,
   Mail, MessageCircle, MessageSquareText, Sparkles,
-  CheckCircle2, AlertTriangle, Search,
+  CheckCircle2, AlertTriangle,
 } from "lucide-react";
 
 import QueryInput from "@/components/QueryInput";
@@ -24,7 +24,7 @@ type UsageData = {
   requests: number; model: string; daily_token_limit: number; daily_request_limit: number;
 };
 
-const EXAMPLE_QUERIES = [
+const EXAMPLES = [
   "How much did I spend on groceries last month?",
   "What did the doctor say in January?",
   "Does Meena owe me money?",
@@ -40,11 +40,11 @@ const INSIGHT_TABS: { key: InsightTab; label: string; icon: React.ReactNode }[] 
 ];
 
 const DATA_SOURCES = [
-  { name: "PDF Documents", tool: "search_pdf",      color: "var(--orange)", bg: "rgba(249,115,22,0.08)", bdr: "rgba(249,115,22,0.2)", icon: <FileType2 size={12} /> },
-  { name: "CSV Files",     tool: "search_csv",      color: "var(--green)",  bg: "rgba(34,197,94,0.08)",  bdr: "rgba(34,197,94,0.2)",  icon: <FileSpreadsheet size={12} /> },
-  { name: "Text & Notes",  tool: "search_txt",      color: "var(--violet)", bg: "rgba(139,92,246,0.08)", bdr: "rgba(139,92,246,0.2)", icon: <FileText size={12} /> },
-  { name: "Gmail / Email", tool: "search_email",    color: "var(--red)",    bg: "rgba(239,68,68,0.08)",  bdr: "rgba(239,68,68,0.2)",  icon: <Mail size={12} /> },
-  { name: "WhatsApp",      tool: "search_whatsapp", color: "var(--teal)",   bg: "rgba(20,184,166,0.08)", bdr: "rgba(20,184,166,0.2)", icon: <MessageCircle size={12} /> },
+  { name: "PDF Documents", tool: "search_pdf",      color: "var(--c-pdf)",      bg: "rgba(249,115,22,0.08)", bdr: "rgba(249,115,22,0.2)",  icon: <FileType2 size={12} /> },
+  { name: "CSV Files",     tool: "search_csv",      color: "var(--c-csv)",      bg: "rgba(16,185,129,0.08)", bdr: "rgba(16,185,129,0.2)",  icon: <FileSpreadsheet size={12} /> },
+  { name: "Text & Notes",  tool: "search_txt",      color: "var(--c-txt)",      bg: "rgba(139,92,246,0.08)", bdr: "rgba(139,92,246,0.2)",  icon: <FileText size={12} /> },
+  { name: "Gmail / Email", tool: "search_email",    color: "var(--c-email)",    bg: "rgba(239,68,68,0.08)",  bdr: "rgba(239,68,68,0.2)",   icon: <Mail size={12} /> },
+  { name: "WhatsApp",      tool: "search_whatsapp", color: "var(--c-whatsapp)", bg: "rgba(20,184,166,0.08)", bdr: "rgba(20,184,166,0.2)",  icon: <MessageCircle size={12} /> },
 ];
 
 function fmtTime(d: Date) { return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); }
@@ -59,17 +59,22 @@ const SCAN_STEPS = ["Scanning documents…", "Checking emails…", "Analyzing no
 function ThinkingDots() {
   const [step, setStep] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => setStep((s) => (s + 1) % SCAN_STEPS.length), 900);
+    const id = setInterval(() => setStep(s => (s + 1) % SCAN_STEPS.length), 900);
     return () => clearInterval(id);
   }, []);
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "6px 0" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "4px 0" }}>
       <div style={{ display: "flex", gap: 4 }}>
-        {[0,1,2].map((i) => (
-          <span key={i} style={{ display: "inline-block", width: 6, height: 6, borderRadius: "50%", background: "var(--accent)", animation: `bounce-dot 1.2s ease-in-out ${i * 0.2}s infinite` }} />
+        {[0, 1, 2].map(i => (
+          <span key={i} style={{
+            width: 6, height: 6, borderRadius: "50%",
+            background: "var(--accent)",
+            display: "inline-block",
+            animation: `bounce-dot 1.2s ease-in-out ${i * 0.2}s infinite`,
+          }} />
         ))}
       </div>
-      <span style={{ fontSize: 12.5, color: "var(--accent-light)" }}>{SCAN_STEPS[step]}</span>
+      <span style={{ fontSize: 12.5, color: "#A5B4FC" }}>{SCAN_STEPS[step]}</span>
     </div>
   );
 }
@@ -93,10 +98,13 @@ export default function HomePage() {
     requests: 0, model: "llama-3.3-70b-versatile",
     daily_token_limit: 500_000, daily_request_limit: 14_400,
   });
+  const [mounted, setMounted] = useState(false);
 
   const menuRef  = useRef<HTMLDivElement>(null);
   const usageRef = useRef<HTMLDivElement>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     try {
@@ -109,17 +117,13 @@ export default function HomePage() {
   }, []);
 
   useEffect(() => {
-    const close = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowUserMenu(false);
-    };
+    const close = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowUserMenu(false); };
     if (showUserMenu) document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
   }, [showUserMenu]);
 
   useEffect(() => {
-    const close = (e: MouseEvent) => {
-      if (usageRef.current && !usageRef.current.contains(e.target as Node)) setShowUsage(false);
-    };
+    const close = (e: MouseEvent) => { if (usageRef.current && !usageRef.current.contains(e.target as Node)) setShowUsage(false); };
     if (showUsage) document.addEventListener("mousedown", close);
     return () => document.removeEventListener("mousedown", close);
   }, [showUsage]);
@@ -153,9 +157,7 @@ export default function HomePage() {
       try { const ur = await fetch("/api/usage"); if (ur.ok) setUsageData(await ur.json() as UsageData); } catch { /**/ }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unexpected error");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
   }
 
   function handleLogout() {
@@ -165,44 +167,44 @@ export default function HomePage() {
 
   const sourceUsed = new Set(response?.toolUsed ?? []);
   const tokenPct = Math.min(100, (usageData.total_tokens / usageData.daily_token_limit) * 100);
-  const tokenBarColor = tokenPct > 80 ? "var(--red)" : tokenPct > 50 ? "var(--amber)" : "var(--accent)";
+  const tokenBarColor = tokenPct > 80 ? "var(--c-email)" : tokenPct > 50 ? "#F59E0B" : "var(--accent)";
 
-  function renderInsightContent() {
+  function renderInsight() {
     switch (insightTab) {
-      case "evidence": return <EvidenceCards sources={response?.sources ?? []} />;
+      case "evidence":  return <EvidenceCards sources={response?.sources ?? []} />;
       case "conflicts": return <ConflictPanel conflicts={response?.conflictsPanel ?? []} />;
       case "truth":
         return response?.structuredTruth
           ? <StructuredTruthPanel truth={response.structuredTruth} />
           : (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 16px", textAlign: "center" }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(102,155,188,0.05)", border: "1px solid rgba(102,155,188,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <CheckCircle2 size={16} style={{ color: "var(--text-ghost)" }} />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
+              <div style={{ width: 42, height: 42, borderRadius: 11, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <CheckCircle2 size={16} style={{ color: "var(--txt-4)" }} />
               </div>
-              <p style={{ fontSize: 12.5, color: "var(--text-muted)" }}>Ask a question to extract structured facts</p>
+              <p style={{ fontSize: 12, color: "var(--txt-3)" }}>Ask a question to extract structured facts</p>
             </div>
           );
       case "summary":
         return (
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <p className="section-label" style={{ marginBottom: 4 }}>Session Summary</p>
+            <p className="sec-label" style={{ marginBottom: 3 }}>Session Overview</p>
             {[
-              { label: "Total Queries",  val: totalQueries },
-              { label: "Files Indexed",  val: sourceStats.total },
-              { label: "Sources Used",   val: (response?.toolUsed ?? []).length },
-              { label: "Tokens Used",    val: fmtTokens(usageData.total_tokens) },
+              { label: "Total Queries", val: totalQueries },
+              { label: "Files Indexed", val: sourceStats.total },
+              { label: "Sources Used",  val: (response?.toolUsed ?? []).length },
+              { label: "Tokens Used",   val: fmtTokens(usageData.total_tokens) },
             ].map(({ label, val }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 9, background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)" }}>
-                <span style={{ fontSize: 12.5, color: "var(--text-muted)" }}>{label}</span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent-light)", fontFamily: "var(--font-mono)" }}>{val}</span>
+              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <span style={{ fontSize: 12.5, color: "var(--txt-3)" }}>{label}</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: "#A5B4FC", fontFamily: "monospace" }}>{val}</span>
               </div>
             ))}
             {(response?.toolUsed ?? []).length > 0 && (
-              <div style={{ padding: "10px 12px", borderRadius: 9, background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)" }}>
-                <p className="section-label" style={{ marginBottom: 8 }}>Sources Searched</p>
+              <div style={{ padding: "10px 12px", borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <p className="sec-label" style={{ marginBottom: 8 }}>Sources Searched</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                  {(response?.toolUsed ?? []).map((t) => (
-                    <span key={t} className="badge badge-accent">{t.replace("search_", "").toUpperCase()}</span>
+                  {(response?.toolUsed ?? []).map(t => (
+                    <span key={t} className="pill pill-accent">{t.replace("search_", "").toUpperCase()}</span>
                   ))}
                 </div>
               </div>
@@ -212,89 +214,98 @@ export default function HomePage() {
     }
   }
 
+  if (!mounted) return null;
+
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", background: "var(--bg-base)" }}>
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", background: "var(--space-1)", position: "relative" }}>
 
-      {/* Ambient */}
-      <div aria-hidden style={{ pointerEvents: "none", position: "fixed", inset: 0, zIndex: 0,
-        background: "radial-gradient(ellipse 900px 500px at 20% -5%, rgba(193,18,31,0.07) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 85% 105%, rgba(120,0,0,0.05) 0%, transparent 60%)" }} />
+      {/* ── AURORA BACKGROUND ─────────────────────────────── */}
+      <div className="aurora-bg" aria-hidden>
+        <div className="aurora-blob aurora-blob-1" />
+        <div className="aurora-blob aurora-blob-2" />
+        <div className="aurora-blob aurora-blob-3" />
+        <div className="aurora-blob aurora-blob-4" />
+      </div>
 
-      {/* ── TOPBAR ────────────────────────────────────────────── */}
-      <header style={{ position: "relative", zIndex: 20, height: 50, display: "flex", alignItems: "center",
-        justifyContent: "space-between", padding: "0 18px", flexShrink: 0,
-        borderBottom: "1px solid rgba(102,155,188,0.1)",
-        background: "rgba(0,24,36,0.95)", backdropFilter: "blur(20px)" }}>
-
+      {/* ── TOPBAR ────────────────────────────────────────── */}
+      <header
+        className="topbar-glass anim-fade-in"
+        style={{ position: "relative", zIndex: 20, height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 20px", flexShrink: 0 }}
+      >
         {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "linear-gradient(135deg, var(--accent), var(--accent-light))", boxShadow: "0 0 12px rgba(193,18,31,0.4)" }}>
-            <Brain size={13} color="#fff" />
+        <div style={{ display: "flex", alignItems: "center", gap: 11 }} className="anim-float-up d-0">
+          <div style={{
+            width: 30, height: 30, borderRadius: 9,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            background: "linear-gradient(135deg, #6366F1, #A78BFA)",
+            boxShadow: "0 0 16px rgba(99,102,241,0.5), 0 0 4px rgba(167,139,250,0.3)",
+          }}>
+            <Brain size={14} color="#fff" />
           </div>
-          <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text-primary)" }}>
-            Memora <span className="text-gradient">AI</span>
+          <span style={{ fontSize: 17, fontWeight: 800, letterSpacing: "-0.04em", fontFamily: "var(--font-display)", color: "var(--txt-1)" }}>
+            Memora <span className="grad-text">AI</span>
           </span>
-          <span className="badge badge-accent" style={{ marginLeft: 2 }}>Personal Executive</span>
+          <span className="pill pill-accent" style={{ marginLeft: 2 }}>Personal Executive</span>
         </div>
 
-        {/* Right controls */}
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        {/* Right */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }} className="anim-float-up d-1">
           {/* Online */}
-          <div style={{ display: "flex", alignItems: "center", gap: 5, padding: "3px 10px", borderRadius: 99,
-            background: "rgba(34,197,94,0.07)", border: "1px solid rgba(34,197,94,0.17)" }}>
+          <div className="status-online-badge">
             <span className="status-dot" />
-            <span style={{ fontSize: 11, fontWeight: 500, color: "#86EFAC" }}>Online</span>
+            <span style={{ fontSize: 11, fontWeight: 500, color: "#6EE7B7" }}>Online</span>
           </div>
 
           {/* Usage */}
           <div ref={usageRef} style={{ position: "relative" }}>
             <button
               onClick={() => setShowUsage(v => !v)}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 10px", borderRadius: 8,
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-                color: "var(--text-muted)", transition: "all 140ms ease" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; }}
+              style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 11px", borderRadius: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", color: "var(--txt-3)", transition: "all 150ms ease", backdropFilter: "blur(8px)" }}
+              onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.14)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.09)"; }}
             >
-              <Activity size={12} style={{ color: "var(--accent-light)" }} />
-              <span style={{ fontSize: 11.5, fontFamily: "var(--font-mono)" }}>{fmtTokens(usageData.total_tokens)}</span>
-              <span style={{ fontSize: 11, color: "var(--text-ghost)" }}>tokens</span>
+              <Activity size={12} style={{ color: "#A5B4FC" }} />
+              <span style={{ fontSize: 11.5, fontFamily: "monospace" }}>{fmtTokens(usageData.total_tokens)}</span>
+              <span style={{ fontSize: 11, color: "var(--txt-4)" }}>tokens</span>
             </button>
 
             {showUsage && (
-              <div className="anim-fade-up" style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 50,
-                width: 240, borderRadius: 12, overflow: "hidden",
-                background: "rgba(0,24,36,0.98)", backdropFilter: "blur(20px)",
-                border: "1px solid rgba(102,155,188,0.16)", boxShadow: "0 20px 50px rgba(0,0,0,0.65)" }}>
-                <div style={{ padding: "12px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>API Usage</p>
-                  <p style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)", marginTop: 2 }}>{usageData.model}</p>
+              <div className="anim-float-up" style={{
+                position: "absolute", right: 0, top: "calc(100% + 10px)", zIndex: 50,
+                width: 250, borderRadius: 14, overflow: "hidden",
+                background: "rgba(6,8,18,0.92)", backdropFilter: "blur(32px) saturate(180%)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 24px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.05)",
+              }}>
+                <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "var(--txt-1)", fontFamily: "var(--font-display)" }}>API Usage</p>
+                  <p style={{ fontSize: 11, color: "var(--txt-3)", marginTop: 2, fontFamily: "monospace" }}>{usageData.model}</p>
                 </div>
-                <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 11 }}>
                   <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 5 }}>
-                      <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Tokens</span>
-                      <span style={{ fontSize: 11.5, fontWeight: 600, fontFamily: "var(--font-mono)", color: "var(--accent-light)" }}>
-                        {fmtTokens(usageData.total_tokens)} <span style={{ color: "var(--text-ghost)" }}>/ {fmtTokens(usageData.daily_token_limit)}</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                      <span style={{ fontSize: 11, color: "var(--txt-3)" }}>Tokens</span>
+                      <span style={{ fontSize: 11.5, fontWeight: 600, fontFamily: "monospace", color: "#A5B4FC" }}>
+                        {fmtTokens(usageData.total_tokens)} <span style={{ color: "var(--txt-4)" }}>/ {fmtTokens(usageData.daily_token_limit)}</span>
                       </span>
                     </div>
                     <div style={{ height: 4, borderRadius: 99, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                      <div style={{ height: "100%", borderRadius: 99, width: `${tokenPct}%`, background: tokenBarColor, transition: "width 500ms ease" }} />
+                      <div style={{ height: "100%", borderRadius: 99, width: `${tokenPct}%`, background: tokenBarColor, transition: "width 600ms ease", boxShadow: `0 0 8px ${tokenBarColor}` }} />
                     </div>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
                     {[{ l: "Prompt", v: usageData.prompt_tokens }, { l: "Response", v: usageData.completion_tokens }].map(({ l, v }) => (
-                      <div key={l} style={{ borderRadius: 8, padding: "8px 10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <p style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-ghost)", marginBottom: 3 }}>{l}</p>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{fmtTokens(v)}</p>
+                      <div key={l} style={{ borderRadius: 9, padding: "8px 10px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                        <p style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--txt-4)", marginBottom: 4 }}>{l}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: "var(--txt-2)", fontFamily: "monospace" }}>{fmtTokens(v)}</p>
                       </div>
                     ))}
                   </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 10px", borderRadius: 8, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.055)" }}>
-                    <span style={{ fontSize: 12, color: "var(--text-muted)" }}>Requests</span>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>{usageData.requests} / {usageData.daily_request_limit.toLocaleString()}</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 10px", borderRadius: 9, background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <span style={{ fontSize: 12, color: "var(--txt-3)" }}>Requests</span>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: "var(--txt-2)", fontFamily: "monospace" }}>{usageData.requests} / {usageData.daily_request_limit.toLocaleString()}</span>
                   </div>
-                  <p style={{ fontSize: 10.5, textAlign: "center", color: "var(--text-ghost)" }}>Groq free tier · resets daily</p>
+                  <p style={{ fontSize: 10.5, textAlign: "center", color: "var(--txt-4)" }}>Groq free tier · resets daily</p>
                 </div>
               </div>
             )}
@@ -304,33 +315,30 @@ export default function HomePage() {
           <div ref={menuRef} style={{ position: "relative" }}>
             <button
               onClick={() => setShowUserMenu(v => !v)}
-              style={{ display: "flex", alignItems: "center", gap: 7, padding: "5px 10px", borderRadius: 8,
-                background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-                transition: "all 140ms ease" }}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "5px 11px", borderRadius: 9, background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.09)", transition: "all 150ms ease", backdropFilter: "blur(8px)" }}
               onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.07)"; }}
               onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.04)"; }}
             >
-              <div className="avatar" style={{ width: 22, height: 22, fontSize: 10 }}>
-                {activeUser.name.charAt(0).toUpperCase()}
-              </div>
-              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--text-secondary)" }}>{activeUser.name}</span>
-              <ChevronDown size={10} style={{ color: "var(--text-ghost)" }} />
+              <div className="avatar-glass" style={{ width: 22, height: 22, fontSize: 10 }}>{activeUser.name.charAt(0).toUpperCase()}</div>
+              <span style={{ fontSize: 12, fontWeight: 500, color: "var(--txt-2)" }}>{activeUser.name}</span>
+              <ChevronDown size={10} style={{ color: "var(--txt-4)" }} />
             </button>
 
             {showUserMenu && (
-              <div className="anim-fade-up" style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 50,
-                width: 200, borderRadius: 12, overflow: "hidden",
-                background: "rgba(10,14,22,0.98)", backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 50px rgba(0,0,0,0.65)" }}>
-                <div style={{ padding: "12px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                  <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{activeUser.name}</p>
-                  <p style={{ fontSize: 11.5, color: "var(--text-muted)", marginTop: 2 }}>{activeUser.email}</p>
+              <div className="anim-float-up" style={{
+                position: "absolute", right: 0, top: "calc(100% + 10px)", zIndex: 50,
+                width: 210, borderRadius: 14, overflow: "hidden",
+                background: "rgba(6,8,18,0.92)", backdropFilter: "blur(32px)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                boxShadow: "0 24px 60px rgba(0,0,0,0.7)",
+              }}>
+                <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                  <p style={{ fontSize: 13, fontWeight: 700, color: "var(--txt-1)", fontFamily: "var(--font-display)" }}>{activeUser.name}</p>
+                  <p style={{ fontSize: 11.5, color: "var(--txt-3)", marginTop: 2 }}>{activeUser.email}</p>
                 </div>
                 <div style={{ padding: 6 }}>
                   <button onClick={handleLogout}
-                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 10px",
-                      borderRadius: 7, background: "transparent", border: "none", color: "#FCA5A5",
-                      fontSize: 13, transition: "background 130ms ease" }}
+                    style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "8px 10px", borderRadius: 8, background: "transparent", border: "none", color: "#FCA5A5", fontSize: 13, transition: "background 140ms ease" }}
                     onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
                     onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}>
                     <LogOut size={12} /> Sign out
@@ -342,28 +350,27 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* ── 3-COLUMN BODY ──────────────────────────────────────── */}
+      {/* ── 3-COLUMN BODY ──────────────────────────────────── */}
       <div style={{ position: "relative", zIndex: 10, display: "flex", flex: 1, overflow: "hidden", minHeight: 0 }}>
 
-        {/* ── LEFT SIDEBAR (256px) ─────────────────────────────── */}
-        <aside className="lg-hide" style={{
-          width: 256, flexShrink: 0, display: "flex", flexDirection: "column", overflow: "hidden",
-          background: "rgba(10,14,22,0.8)", backdropFilter: "blur(20px)",
-          borderRight: "1px solid rgba(255,255,255,0.055)"
-        }}>
+        {/* ── LEFT SIDEBAR ────────────────────────────────── */}
+        <aside
+          className="sidebar-glass hide-below-lg anim-slide-left"
+          style={{ width: 262, flexShrink: 0, flexDirection: "column", overflow: "hidden" }}
+        >
           {/* Tab toggle */}
-          <div style={{ flexShrink: 0, padding: "12px 12px 8px" }}>
-            <div className="tab-bar">
+          <div style={{ flexShrink: 0, padding: "14px 14px 10px" }}>
+            <div className="tab-bar-glass">
               {(["sources", "history"] as LeftTab[]).map(t => (
-                <button key={t} className={`tab-item ${leftTab === t ? "active" : ""}`} onClick={() => setLeftTab(t)}>
-                  {t === "sources" ? <><Database size={11} /> Data Hub</> : <><History size={11} /> History</>}
+                <button key={t} className={`tab-btn ${leftTab === t ? "active" : ""}`} onClick={() => setLeftTab(t)}>
+                  {t === "sources" ? <><Database size={11} />Data Hub</> : <><History size={11} />History</>}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Scrollable content */}
-          <div style={{ flex: 1, overflowY: "auto", padding: "8px 12px 12px", display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ flex: 1, overflowY: "auto", padding: "4px 14px 14px", display: "flex", flexDirection: "column", gap: 16 }}>
             {leftTab === "sources" ? (
               <>
                 <FileUploader compact onStatsChange={setSourceStats} />
@@ -373,28 +380,29 @@ export default function HomePage() {
 
                 {/* Connected sources */}
                 <div>
-                  <p className="section-label" style={{ marginBottom: 8 }}>Connected Sources</p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <p className="sec-label" style={{ marginBottom: 9 }}>Connected Sources</p>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
                     {DATA_SOURCES.map(src => {
                       const active = sourceUsed.has(src.tool);
                       return (
-                        <div key={src.name} className="source-row" style={{ background: active ? src.bg : "transparent" }}>
+                        <div key={src.name} className={`source-row-glass ${active ? "used" : ""}`}>
                           <div style={{
-                            width: 26, height: 26, borderRadius: 7, flexShrink: 0,
+                            width: 28, height: 28, borderRadius: 8, flexShrink: 0,
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            background: active ? `${src.color}18` : "rgba(255,255,255,0.04)",
-                            border: `1px solid ${active ? src.bdr : "rgba(255,255,255,0.07)"}`,
-                            color: active ? src.color : "var(--text-ghost)",
-                            transition: "all 200ms ease",
+                            background: active ? `${src.bg}` : "rgba(255,255,255,0.04)",
+                            border: `1px solid ${active ? src.bdr : "rgba(255,255,255,0.08)"}`,
+                            color: active ? src.color : "var(--txt-4)",
+                            transition: "all 220ms ease",
+                            boxShadow: active ? `0 0 10px ${src.bg}` : "none",
                           }}>
                             {src.icon}
                           </div>
-                          <span style={{ flex: 1, fontSize: 12, fontWeight: 500, color: active ? "var(--text-secondary)" : "var(--text-muted)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+                          <span style={{ flex: 1, fontSize: 12, fontWeight: 500, color: active ? "var(--txt-2)" : "var(--txt-4)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
                             {src.name}
                           </span>
                           {active
-                            ? <span className="badge" style={{ background: `${src.color}18`, color: src.color, borderColor: src.bdr, flexShrink: 0 }}>Used</span>
-                            : <span style={{ width: 6, height: 6, borderRadius: "50%", background: "rgba(255,255,255,0.07)", flexShrink: 0 }} />
+                            ? <span className="pill" style={{ background: src.bg, color: src.color, borderColor: src.bdr, flexShrink: 0 }}>Used</span>
+                            : <span style={{ width: 5, height: 5, borderRadius: "50%", background: "rgba(255,255,255,0.08)", flexShrink: 0 }} />
                           }
                         </div>
                       );
@@ -403,11 +411,11 @@ export default function HomePage() {
                 </div>
 
                 {/* Stats */}
-                <div style={{ display: "flex", gap: 6 }}>
+                <div style={{ display: "flex", gap: 7 }}>
                   {[{ label: "Queries", val: totalQueries }, { label: "Files", val: sourceStats.total }].map(({ label, val }) => (
-                    <div key={label} className="stat-chip">
-                      <span style={{ fontSize: 10.5, color: "var(--text-ghost)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</span>
-                      <span style={{ fontSize: 20, fontWeight: 700, color: "var(--accent-light)", fontFamily: "var(--font-mono)", lineHeight: 1 }}>{val}</span>
+                    <div key={label} className="stat-glass">
+                      <span style={{ fontSize: 10, color: "var(--txt-4)", textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-display)" }}>{label}</span>
+                      <span style={{ fontSize: 22, fontWeight: 800, color: "#A5B4FC", fontFamily: "var(--font-display)", lineHeight: 1, textShadow: "0 0 20px rgba(99,102,241,0.5)" }}>{val}</span>
                     </div>
                   ))}
                 </div>
@@ -415,21 +423,18 @@ export default function HomePage() {
             ) : (
               /* History */
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                <p className="section-label" style={{ marginBottom: 4 }}>Recent Queries</p>
+                <p className="sec-label" style={{ marginBottom: 4 }}>Recent Queries</p>
                 {recentQueries.length === 0 ? (
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 8, padding: "32px 16px", textAlign: "center" }}>
-                    <History size={22} style={{ color: "var(--text-ghost)" }} />
-                    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Your history will appear here</p>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 12px", textAlign: "center" }}>
+                    <History size={24} style={{ color: "var(--txt-4)" }} />
+                    <p style={{ fontSize: 12, color: "var(--txt-3)" }}>Your history will appear here</p>
                   </div>
                 ) : recentQueries.map(({ q, t }) => (
                   <button key={q} onClick={() => void submitQuery(q)}
-                    style={{ display: "block", width: "100%", textAlign: "left", padding: "9px 10px", borderRadius: 9,
-                      background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)",
-                      transition: "all 140ms ease", cursor: "pointer" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(102,155,188,0.2)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(102,155,188,0.1)"; }}>
-                    <p style={{ fontSize: 12, color: "var(--text-secondary)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{q}</p>
-                    <p style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{t}</p>
+                    className="glass-card"
+                    style={{ display: "block", width: "100%", textAlign: "left", padding: "10px 12px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 11 }}>
+                    <p style={{ fontSize: 12, color: "var(--txt-2)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{q}</p>
+                    <p style={{ fontSize: 10.5, color: "var(--txt-4)", marginTop: 3, fontFamily: "monospace" }}>{t}</p>
                   </button>
                 ))}
               </div>
@@ -437,66 +442,76 @@ export default function HomePage() {
           </div>
 
           {/* User footer */}
-          <div style={{ flexShrink: 0, padding: "10px 12px", borderTop: "1px solid rgba(255,255,255,0.055)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-              <div className="avatar">{activeUser.name.charAt(0).toUpperCase()}</div>
+          <div style={{ flexShrink: 0, padding: "11px 14px", borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.2)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div className="avatar-glass" style={{ width: 30, height: 30, fontSize: 12 }}>{activeUser.name.charAt(0).toUpperCase()}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-secondary)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{activeUser.name}</p>
-                <p style={{ fontSize: 10.5, color: "var(--text-muted)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{activeUser.email}</p>
+                <p style={{ fontSize: 12.5, fontWeight: 600, color: "var(--txt-2)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{activeUser.name}</p>
+                <p style={{ fontSize: 10.5, color: "var(--txt-4)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{activeUser.email}</p>
               </div>
-              <button className="icon-btn" onClick={handleLogout} title="Sign out"
-                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = "#FCA5A5"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = "var(--text-muted)"; }}>
+              <button
+                onClick={handleLogout}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 28, height: 28, borderRadius: 7, border: "none", background: "transparent", color: "var(--txt-3)", transition: "all 150ms ease" }}
+                title="Sign out"
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.1)"; (e.currentTarget as HTMLButtonElement).style.color = "#FCA5A5"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "var(--txt-3)"; }}
+              >
                 <LogOut size={13} />
               </button>
             </div>
           </div>
         </aside>
 
-        {/* ── CENTER CHAT ──────────────────────────────────────── */}
-        <main style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
-          {/* Messages */}
+        {/* ── CENTER CHAT ──────────────────────────────────── */}
+        <main className="anim-fade-in" style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", overflow: "hidden" }}>
           <div style={{ flex: 1, overflowY: "auto" }}>
-            <div style={{ maxWidth: 780, margin: "0 auto", padding: "28px 24px", display: "flex", flexDirection: "column", gap: 0 }}>
+            <div style={{ maxWidth: 800, margin: "0 auto", padding: "32px 28px", display: "flex", flexDirection: "column" }}>
 
               {/* Welcome */}
               {messages.length === 0 && !loading && (
-                <div className="anim-fade-up" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 22, padding: "32px 0 40px", textAlign: "center" }}>
-                  <div style={{ width: 56, height: 56, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "linear-gradient(135deg, var(--accent), var(--accent-light))",
-                    boxShadow: "0 0 32px rgba(193,18,31,0.3)" }}>
-                    <Brain size={24} color="#fff" />
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, padding: "28px 0 36px", textAlign: "center" }}>
+                  {/* Glowing brain icon */}
+                  <div className="anim-float-up d-0" style={{
+                    width: 72, height: 72, borderRadius: 22,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: "linear-gradient(135deg, rgba(99,102,241,0.3), rgba(167,139,250,0.2))",
+                    border: "1px solid rgba(99,102,241,0.35)",
+                    backdropFilter: "blur(16px)",
+                    boxShadow: "0 0 40px rgba(99,102,241,0.3), 0 0 80px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.1)",
+                    animation: "glow-pulse 3s ease-in-out infinite",
+                  }}>
+                    <Brain size={30} style={{ color: "#A5B4FC" }} />
                   </div>
-                  <div>
-                    <h1 style={{ fontSize: 24, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.04em", lineHeight: 1.2, marginBottom: 10 }}>
-                      What would you like to remember?
+
+                  <div className="anim-float-up d-1">
+                    <h1 style={{ fontSize: 28, fontWeight: 800, color: "var(--txt-1)", letterSpacing: "-0.04em", lineHeight: 1.15, marginBottom: 10, fontFamily: "var(--font-display)" }}>
+                      What would you like<br />
+                      <span className="grad-text">to remember?</span>
                     </h1>
-                    <p style={{ fontSize: 14.5, color: "var(--text-muted)", maxWidth: 440, margin: "0 auto" }}>
+                    <p style={{ fontSize: 15, color: "var(--txt-3)", maxWidth: 420, margin: "0 auto", lineHeight: 1.6 }}>
                       Ask anything across your emails, documents, notes, and data files.
                     </p>
                   </div>
 
-                  <div style={{ width: "100%", maxWidth: 560 }}>
-                    <p className="section-label" style={{ marginBottom: 10 }}>Try asking</p>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 7 }}>
-                      {EXAMPLE_QUERIES.map(eq => (
-                        <button key={eq} onClick={() => void submitQuery(eq)}
-                          style={{ textAlign: "left", padding: "11px 13px", borderRadius: 10,
-                            background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)",
-                            fontSize: 12.5, color: "var(--text-muted)", transition: "all 150ms ease", cursor: "pointer" }}
-                          onMouseEnter={e => {
-                            const b = e.currentTarget as HTMLButtonElement;
-                            b.style.color = "var(--text-secondary)";
-                            b.style.borderColor = "rgba(255,255,255,0.12)";
-                            b.style.background = "rgba(255,255,255,0.04)";
+                  {/* Example cards */}
+                  <div className="anim-float-up d-2" style={{ width: "100%", maxWidth: 580 }}>
+                    <p className="sec-label" style={{ marginBottom: 12 }}>Try asking</p>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                      {EXAMPLES.map((eq, i) => (
+                        <button
+                          key={eq}
+                          onClick={() => void submitQuery(eq)}
+                          className="glass-card"
+                          style={{
+                            textAlign: "left", padding: "12px 14px",
+                            background: "rgba(255,255,255,0.03)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            borderRadius: 12,
+                            animationDelay: `${i * 50}ms`,
                           }}
-                          onMouseLeave={e => {
-                            const b = e.currentTarget as HTMLButtonElement;
-                            b.style.color = "var(--text-muted)";
-                            b.style.borderColor = "rgba(255,255,255,0.07)";
-                            b.style.background = "rgba(255,255,255,0.025)";
-                          }}>
-                          <span style={{ color: "var(--accent)", marginRight: 7, fontWeight: 600 }}>→</span>{eq}
+                        >
+                          <span style={{ color: "var(--accent)", marginRight: 7, fontWeight: 700 }}>→</span>
+                          <span style={{ fontSize: 12.5, color: "var(--txt-3)" }}>{eq}</span>
                         </button>
                       ))}
                     </div>
@@ -506,21 +521,23 @@ export default function HomePage() {
 
               {/* Thread */}
               {messages.map(({ q, r, time }, idx) => (
-                <div key={idx} className="anim-fade-up" style={{ marginBottom: 20, display: "flex", flexDirection: "column", gap: 10, animationDelay: `${idx * 30}ms` }}>
-                  {/* User */}
+                <div key={idx} className="anim-float-up" style={{ marginBottom: 22, display: "flex", flexDirection: "column", gap: 10, animationDelay: `${idx * 20}ms` }}>
+                  {/* User bubble */}
                   <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                    <div className="bubble-user" style={{ maxWidth: "74%", padding: "10px 14px" }}>
-                      <p style={{ fontSize: 13.5, lineHeight: 1.65, color: "var(--text-primary)" }}>{q}</p>
-                      <p style={{ marginTop: 4, textAlign: "right", fontSize: 10.5, color: "var(--text-muted)", fontFamily: "var(--font-mono)" }}>{time}</p>
+                    <div className="bubble-user" style={{ maxWidth: "72%", padding: "11px 15px" }}>
+                      <p style={{ fontSize: 14, lineHeight: 1.65, color: "var(--txt-1)" }}>{q}</p>
+                      <p style={{ marginTop: 5, textAlign: "right", fontSize: 10.5, color: "rgba(165,180,252,0.5)", fontFamily: "monospace" }}>{time}</p>
                     </div>
                   </div>
-                  {/* AI */}
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <div style={{ marginTop: 2, width: 26, height: 26, borderRadius: 8, flexShrink: 0,
+                  {/* AI bubble */}
+                  <div style={{ display: "flex", gap: 11 }}>
+                    <div style={{
+                      marginTop: 2, width: 28, height: 28, borderRadius: 9, flexShrink: 0,
                       display: "flex", alignItems: "center", justifyContent: "center",
-                      background: "linear-gradient(135deg, var(--accent), var(--accent-light))",
-                      boxShadow: "0 0 8px rgba(193,18,31,0.3)" }}>
-                      <Brain size={12} color="#fff" />
+                      background: "linear-gradient(135deg, #6366F1, #A78BFA)",
+                      boxShadow: "0 0 10px rgba(99,102,241,0.4)",
+                    }}>
+                      <Brain size={13} color="#fff" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <AnswerPanel response={r} loading={false} error={null} compact />
@@ -531,20 +548,18 @@ export default function HomePage() {
 
               {/* Thinking */}
               {loading && (
-                <div className="anim-fade-up" style={{ display: "flex", gap: 10, marginBottom: 20 }}>
-                  <div style={{ marginTop: 2, width: 26, height: 26, borderRadius: 8, flexShrink: 0,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    background: "linear-gradient(135deg, var(--accent), var(--accent-light))" }}>
-                    <Brain size={12} color="#fff" />
+                <div className="anim-float-up" style={{ display: "flex", gap: 11, marginBottom: 22 }}>
+                  <div style={{ marginTop: 2, width: 28, height: 28, borderRadius: 9, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #6366F1, #A78BFA)", boxShadow: "0 0 10px rgba(99,102,241,0.4)" }}>
+                    <Brain size={13} color="#fff" />
                   </div>
-                  <div className="bubble-ai" style={{ flex: 1, padding: "12px 14px" }}>
+                  <div className="bubble-ai" style={{ flex: 1, padding: "12px 15px" }}>
                     <ThinkingDots />
                   </div>
                 </div>
               )}
 
               {error && (
-                <div style={{ padding: "10px 14px", borderRadius: 9, background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.2)", marginBottom: 16 }}>
+                <div style={{ padding: "11px 14px", borderRadius: 11, background: "rgba(239,68,68,0.07)", border: "1px solid rgba(239,68,68,0.22)", marginBottom: 18, backdropFilter: "blur(8px)" }}>
                   <p style={{ fontSize: 13, color: "#FCA5A5" }}>{error}</p>
                 </div>
               )}
@@ -553,33 +568,33 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Input bar */}
-          <div style={{ flexShrink: 0, padding: "10px 24px 18px",
-            borderTop: "1px solid rgba(102,155,188,0.1)",
-            background: "rgba(0,24,36,0.82)", backdropFilter: "blur(16px)" }}>
-            <div style={{ maxWidth: 780, margin: "0 auto" }}>
+          {/* Input */}
+          <div style={{
+            flexShrink: 0, padding: "12px 28px 20px",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+            background: "rgba(5,7,16,0.6)", backdropFilter: "blur(20px)",
+          }}>
+            <div style={{ maxWidth: 800, margin: "0 auto" }}>
               <QueryInput value={query} onChange={setQuery} onSubmit={() => void submitQuery()} loading={loading} />
             </div>
           </div>
         </main>
 
-        {/* ── RIGHT INSIGHTS PANEL (300px) ─────────────────────── */}
-        <aside className="xl-hide" style={{
-          width: 300, flexShrink: 0, display: "flex", flexDirection: "column", overflow: "hidden",
-          background: "rgba(10,14,22,0.8)", backdropFilter: "blur(20px)",
-          borderLeft: "1px solid rgba(255,255,255,0.055)"
-        }}>
+        {/* ── RIGHT INSIGHTS PANEL ─────────────────────────── */}
+        <aside
+          className="sidebar-glass-right hide-below-xl anim-slide-right"
+          style={{ width: 304, flexShrink: 0, flexDirection: "column", overflow: "hidden" }}
+        >
           {/* Header */}
-          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8, padding: "13px 14px",
-            borderBottom: "1px solid rgba(255,255,255,0.055)" }}>
-            <MessageSquareText size={13} style={{ color: "var(--accent)" }} />
-            <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--text-secondary)" }}>Insights &amp; Verification</span>
+          <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 9, padding: "15px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <MessageSquareText size={14} style={{ color: "var(--accent)" }} />
+            <span style={{ fontSize: 13, fontWeight: 700, color: "var(--txt-2)", fontFamily: "var(--font-display)" }}>Insights &amp; Verification</span>
           </div>
 
           {/* Tabs */}
-          <div className="insight-tabs" style={{ flexShrink: 0 }}>
+          <div className="insight-tabs-bar" style={{ flexShrink: 0 }}>
             {INSIGHT_TABS.map(({ key, label, icon }) => (
-              <button key={key} className={`insight-tab ${insightTab === key ? "active" : ""}`} onClick={() => setInsightTab(key)}>
+              <button key={key} className={`insight-tab-btn ${insightTab === key ? "active" : ""}`} onClick={() => setInsightTab(key)}>
                 {icon} {label}
               </button>
             ))}
@@ -588,31 +603,33 @@ export default function HomePage() {
           {/* Content */}
           <div style={{ flex: 1, overflowY: "auto", padding: 14 }}>
             {!response && !loading ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "36px 16px", textAlign: "center" }}>
-                <div style={{ width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
-                  background: "rgba(193,18,31,0.07)", border: "1px solid rgba(193,18,31,0.12)" }}>
-                  <Sparkles size={18} style={{ color: "var(--text-ghost)" }} />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "36px 12px", textAlign: "center" }}>
+                <div style={{
+                  width: 50, height: 50, borderRadius: 14,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  background: "rgba(99,102,241,0.07)", border: "1px solid rgba(99,102,241,0.14)",
+                  backdropFilter: "blur(8px)",
+                }}>
+                  <Sparkles size={20} style={{ color: "var(--txt-4)" }} />
                 </div>
-                <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "var(--text-muted)", maxWidth: 200 }}>
+                <p style={{ fontSize: 12.5, lineHeight: 1.7, color: "var(--txt-3)", maxWidth: 200 }}>
                   Evidence, conflicts, and structured facts appear after your first query
                 </p>
               </div>
-            ) : renderInsightContent()}
+            ) : renderInsight()}
           </div>
 
           {/* Stats footer */}
           {response && (
-            <div style={{ flexShrink: 0, display: "flex", gap: 6, padding: "10px 12px",
-              borderTop: "1px solid rgba(255,255,255,0.055)", background: "rgba(0,0,0,0.18)" }}>
+            <div style={{ flexShrink: 0, display: "flex", gap: 7, padding: "11px 14px", borderTop: "1px solid rgba(255,255,255,0.07)", background: "rgba(0,0,0,0.25)" }}>
               {[
-                { label: "Sources",   val: response.sources?.length ?? 0,          color: "var(--accent-light)" },
-                { label: "Conflicts", val: (response.conflictsPanel ?? []).length,  color: (response.conflictsPanel ?? []).length > 0 ? "var(--amber)" : "var(--text-muted)" },
-                { label: "Tools",     val: (response.toolUsed ?? []).length,        color: "var(--accent-light)" },
+                { label: "Sources",   val: response.sources?.length ?? 0,         color: "#A5B4FC" },
+                { label: "Conflicts", val: (response.conflictsPanel ?? []).length, color: (response.conflictsPanel ?? []).length > 0 ? "#FCD34D" : "var(--txt-3)" },
+                { label: "Tools",     val: (response.toolUsed ?? []).length,       color: "#A5B4FC" },
               ].map(({ label, val, color }) => (
-                <div key={label} style={{ flex: 1, textAlign: "center", padding: "8px 6px", borderRadius: 8,
-                  background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)" }}>
-                  <p style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-ghost)", marginBottom: 2 }}>{label}</p>
-                  <p style={{ fontSize: 16, fontWeight: 700, color, fontFamily: "var(--font-mono)", lineHeight: 1 }}>{val}</p>
+                <div key={label} className="stat-glass">
+                  <span style={{ fontSize: 9.5, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--txt-4)", fontFamily: "var(--font-display)" }}>{label}</span>
+                  <span style={{ fontSize: 18, fontWeight: 800, color, fontFamily: "var(--font-display)", lineHeight: 1, textShadow: `0 0 16px ${color}55` }}>{val}</span>
                 </div>
               ))}
             </div>
