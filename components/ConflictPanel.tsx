@@ -6,7 +6,7 @@ import { ConflictItem } from "@/lib/types";
 const SEV_STYLES = {
   high:   { wrap: { border: "1px solid rgba(239,68,68,0.25)", background: "rgba(239,68,68,0.04)" }, badge: "badge badge-red",    dot: "#EF4444" },
   medium: { wrap: { border: "1px solid rgba(245,158,11,0.25)", background: "rgba(245,158,11,0.04)" }, badge: "badge badge-amber", dot: "#F59E0B" },
-  low:    { wrap: { border: "1px solid rgba(91,110,245,0.25)", background: "rgba(91,110,245,0.04)" }, badge: "badge badge-accent", dot: "var(--accent)" },
+  low:    { wrap: { border: "1px solid rgba(193,18,31,0.25)", background: "rgba(193,18,31,0.04)" }, badge: "badge badge-accent", dot: "var(--accent)" },
   none:   { wrap: { border: "1px solid rgba(34,197,94,0.22)", background: "rgba(34,197,94,0.04)" }, badge: "badge badge-green",  dot: "var(--green)" },
 };
 
@@ -57,7 +57,7 @@ export default function ConflictPanel({ conflicts }: { conflicts: ConflictItem[]
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 8 }}>
               {item.comparison.map((entry) => (
                 <div key={`${entry.source}-${entry.value}`}
-                  style={{ borderRadius: 7, padding: "10px 11px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                  style={{ borderRadius: 7, padding: "10px 11px", background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.12)" }}>
                   <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", marginBottom: 5 }}>{entry.source}</p>
                   <p style={{ fontSize: 12, lineHeight: 1.6, color: "var(--text-secondary)" }}>{entry.value}</p>
                 </div>
@@ -65,13 +65,13 @@ export default function ConflictPanel({ conflicts }: { conflicts: ConflictItem[]
             </div>
 
             {/* Truth */}
-            <div style={{ borderRadius: 7, padding: "9px 11px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)", marginBottom: 8 }}>
+            <div style={{ borderRadius: 7, padding: "9px 11px", background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.12)", marginBottom: 8 }}>
               <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-muted)", marginBottom: 5 }}>Likely Latest Truth</p>
               <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.6 }}>{item.likelyLatestTruth}</p>
             </div>
 
             {/* Action */}
-            <div style={{ borderRadius: 7, padding: "9px 11px", background: "rgba(91,110,245,0.06)", border: "1px solid rgba(91,110,245,0.18)" }}>
+            <div style={{ borderRadius: 7, padding: "9px 11px", background: "rgba(193,18,31,0.06)", border: "1px solid rgba(193,18,31,0.18)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
                 <ArrowRight size={12} style={{ color: "var(--accent-light)", flexShrink: 0 }} />
                 <p style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--accent-light)" }}>Recommended Action</p>

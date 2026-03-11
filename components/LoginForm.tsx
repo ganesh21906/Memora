@@ -26,10 +26,10 @@ function InputField({
           onBlur={() => setFocused(false)}
           style={{
             width: "100%", padding: "10px 14px", borderRadius: 10,
-            background: "rgba(255,255,255,0.04)",
-            border: `1px solid ${focused ? "rgba(91,110,245,0.5)" : "rgba(255,255,255,0.09)"}`,
+            background: "rgba(102,155,188,0.05)",
+            border: `1px solid ${focused ? "rgba(193,18,31,0.55)" : "rgba(102,155,188,0.16)"}`,
             color: "var(--text-primary)", fontSize: 13.5, outline: "none",
-            boxShadow: focused ? "0 0 0 3px rgba(91,110,245,0.09)" : "none",
+            boxShadow: focused ? "0 0 0 3px rgba(193,18,31,0.1)" : "none",
             transition: "all 150ms ease",
           }}
         />
@@ -57,16 +57,16 @@ export default function LoginForm() {
   return (
     <div className="anim-fade-up" style={{
       width: "100%", maxWidth: 440, borderRadius: 16, overflow: "hidden",
-      background: "rgba(13,17,23,0.98)", backdropFilter: "blur(20px)",
-      border: "1px solid rgba(255,255,255,0.09)",
-      boxShadow: "0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)",
+      background: "rgba(0,48,73,0.98)", backdropFilter: "blur(20px)",
+      border: "1px solid rgba(102,155,188,0.2)",
+      boxShadow: "0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(102,155,188,0.1)",
     }}>
       {/* Card header */}
-      <div style={{ padding: "24px 28px 20px", borderBottom: "1px solid rgba(255,255,255,0.06)", textAlign: "center" }}>
+      <div style={{ padding: "24px 28px 20px", borderBottom: "1px solid rgba(102,155,188,0.1)", textAlign: "center" }}>
         <div style={{ width: 44, height: 44, borderRadius: 12, margin: "0 auto 14px",
           display: "flex", alignItems: "center", justifyContent: "center",
           background: "linear-gradient(135deg, var(--accent), var(--accent-light))",
-          boxShadow: "0 0 24px rgba(91,110,245,0.35)" }}>
+          boxShadow: "0 0 24px rgba(193,18,31,0.35)" }}>
           <Brain size={20} color="#fff" />
         </div>
         <h2 style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.03em" }}>
@@ -85,7 +85,7 @@ export default function LoginForm() {
 
         {/* Consent */}
         <label style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "11px 13px", borderRadius: 10,
-          background: "rgba(91,110,245,0.05)", border: "1px solid rgba(91,110,245,0.15)", cursor: "pointer" }}>
+          background: "rgba(193,18,31,0.05)", border: "1px solid rgba(193,18,31,0.18)", cursor: "pointer" }}>
           <input type="checkbox" checked={accepted} onChange={e => setAccepted(e.target.checked)}
             style={{ marginTop: 2, accentColor: "var(--accent)", width: 14, height: 14, flexShrink: 0 }} />
           <span style={{ fontSize: 12, color: "var(--text-muted)", lineHeight: 1.6 }}>
@@ -97,10 +97,10 @@ export default function LoginForm() {
           style={{
             display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
             padding: "11px 18px", borderRadius: 10, border: "none",
-            background: isDisabled ? "rgba(91,110,245,0.25)" : "var(--accent)",
+            background: isDisabled ? "rgba(193,18,31,0.25)" : "var(--accent)",
             color: isDisabled ? "rgba(255,255,255,0.4)" : "#fff",
             fontSize: 13.5, fontWeight: 600, cursor: isDisabled ? "not-allowed" : "pointer",
-            boxShadow: isDisabled ? "none" : "0 0 16px rgba(91,110,245,0.35)",
+            boxShadow: isDisabled ? "none" : "0 0 16px rgba(193,18,31,0.35)",
             transition: "all 150ms ease",
           }}>
           <ShieldCheck size={15} />

@@ -74,7 +74,7 @@ export default function AnswerPanel({ response, loading, error, compact }: Answe
               h2: ({ children }) => <h2 style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: 15, marginBottom: 7, marginTop: 14 }}>{children}</h2>,
               h3: ({ children }) => <h3 style={{ color: "var(--text-primary)", fontWeight: 600, fontSize: 13.5, marginBottom: 5, marginTop: 10 }}>{children}</h3>,
               code: ({ children }) => (
-                <code style={{ color: "var(--accent-light)", background: "rgba(91,110,245,0.1)", padding: "1px 5px", borderRadius: 4, fontSize: 12.5, fontFamily: "var(--font-mono)" }}>
+                <code style={{ color: "var(--accent-light)", background: "rgba(193,18,31,0.1)", padding: "1px 5px", borderRadius: 4, fontSize: 12.5, fontFamily: "var(--font-mono)" }}>
                   {children}
                 </code>
               ),

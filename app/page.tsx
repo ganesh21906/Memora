@@ -176,7 +176,7 @@ export default function HomePage() {
           ? <StructuredTruthPanel truth={response.structuredTruth} />
           : (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, padding: "32px 16px", textAlign: "center" }}>
-              <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ width: 40, height: 40, borderRadius: 10, background: "rgba(102,155,188,0.05)", border: "1px solid rgba(102,155,188,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <CheckCircle2 size={16} style={{ color: "var(--text-ghost)" }} />
               </div>
               <p style={{ fontSize: 12.5, color: "var(--text-muted)" }}>Ask a question to extract structured facts</p>
@@ -192,13 +192,13 @@ export default function HomePage() {
               { label: "Sources Used",   val: (response?.toolUsed ?? []).length },
               { label: "Tokens Used",    val: fmtTokens(usageData.total_tokens) },
             ].map(({ label, val }) => (
-              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 9, background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.055)" }}>
+              <div key={label} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 9, background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)" }}>
                 <span style={{ fontSize: 12.5, color: "var(--text-muted)" }}>{label}</span>
                 <span style={{ fontSize: 14, fontWeight: 700, color: "var(--accent-light)", fontFamily: "var(--font-mono)" }}>{val}</span>
               </div>
             ))}
             {(response?.toolUsed ?? []).length > 0 && (
-              <div style={{ padding: "10px 12px", borderRadius: 9, background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.055)" }}>
+              <div style={{ padding: "10px 12px", borderRadius: 9, background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)" }}>
                 <p className="section-label" style={{ marginBottom: 8 }}>Sources Searched</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
                   {(response?.toolUsed ?? []).map((t) => (
@@ -217,18 +217,18 @@ export default function HomePage() {
 
       {/* Ambient */}
       <div aria-hidden style={{ pointerEvents: "none", position: "fixed", inset: 0, zIndex: 0,
-        background: "radial-gradient(ellipse 900px 500px at 20% -5%, rgba(91,110,245,0.07) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 85% 105%, rgba(139,92,246,0.04) 0%, transparent 60%)" }} />
+        background: "radial-gradient(ellipse 900px 500px at 20% -5%, rgba(193,18,31,0.07) 0%, transparent 60%), radial-gradient(ellipse 600px 400px at 85% 105%, rgba(120,0,0,0.05) 0%, transparent 60%)" }} />
 
       {/* ── TOPBAR ────────────────────────────────────────────── */}
       <header style={{ position: "relative", zIndex: 20, height: 50, display: "flex", alignItems: "center",
         justifyContent: "space-between", padding: "0 18px", flexShrink: 0,
-        borderBottom: "1px solid rgba(255,255,255,0.055)",
-        background: "rgba(8,11,18,0.92)", backdropFilter: "blur(20px)" }}>
+        borderBottom: "1px solid rgba(102,155,188,0.1)",
+        background: "rgba(0,24,36,0.95)", backdropFilter: "blur(20px)" }}>
 
         {/* Brand */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ width: 28, height: 28, borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "linear-gradient(135deg, var(--accent), var(--accent-light))", boxShadow: "0 0 12px rgba(91,110,245,0.4)" }}>
+            background: "linear-gradient(135deg, var(--accent), var(--accent-light))", boxShadow: "0 0 12px rgba(193,18,31,0.4)" }}>
             <Brain size={13} color="#fff" />
           </div>
           <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.03em", color: "var(--text-primary)" }}>
@@ -264,8 +264,8 @@ export default function HomePage() {
             {showUsage && (
               <div className="anim-fade-up" style={{ position: "absolute", right: 0, top: "calc(100% + 8px)", zIndex: 50,
                 width: 240, borderRadius: 12, overflow: "hidden",
-                background: "rgba(10,14,22,0.98)", backdropFilter: "blur(20px)",
-                border: "1px solid rgba(255,255,255,0.1)", boxShadow: "0 20px 50px rgba(0,0,0,0.65)" }}>
+                background: "rgba(0,24,36,0.98)", backdropFilter: "blur(20px)",
+                border: "1px solid rgba(102,155,188,0.16)", boxShadow: "0 20px 50px rgba(0,0,0,0.65)" }}>
                 <div style={{ padding: "12px 14px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                   <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>API Usage</p>
                   <p style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--font-mono)", marginTop: 2 }}>{usageData.model}</p>
@@ -424,10 +424,10 @@ export default function HomePage() {
                 ) : recentQueries.map(({ q, t }) => (
                   <button key={q} onClick={() => void submitQuery(q)}
                     style={{ display: "block", width: "100%", textAlign: "left", padding: "9px 10px", borderRadius: 9,
-                      background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.055)",
+                      background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)",
                       transition: "all 140ms ease", cursor: "pointer" }}
-                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
-                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(255,255,255,0.055)"; }}>
+                    onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(102,155,188,0.2)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.borderColor = "rgba(102,155,188,0.1)"; }}>
                     <p style={{ fontSize: 12, color: "var(--text-secondary)", overflow: "hidden", whiteSpace: "nowrap", textOverflow: "ellipsis" }}>{q}</p>
                     <p style={{ fontSize: 10.5, color: "var(--text-muted)", marginTop: 3, fontFamily: "var(--font-mono)" }}>{t}</p>
                   </button>
@@ -464,7 +464,7 @@ export default function HomePage() {
                 <div className="anim-fade-up" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 22, padding: "32px 0 40px", textAlign: "center" }}>
                   <div style={{ width: 56, height: 56, borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center",
                     background: "linear-gradient(135deg, var(--accent), var(--accent-light))",
-                    boxShadow: "0 0 32px rgba(91,110,245,0.3)" }}>
+                    boxShadow: "0 0 32px rgba(193,18,31,0.3)" }}>
                     <Brain size={24} color="#fff" />
                   </div>
                   <div>
@@ -519,7 +519,7 @@ export default function HomePage() {
                     <div style={{ marginTop: 2, width: 26, height: 26, borderRadius: 8, flexShrink: 0,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       background: "linear-gradient(135deg, var(--accent), var(--accent-light))",
-                      boxShadow: "0 0 8px rgba(91,110,245,0.3)" }}>
+                      boxShadow: "0 0 8px rgba(193,18,31,0.3)" }}>
                       <Brain size={12} color="#fff" />
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -555,8 +555,8 @@ export default function HomePage() {
 
           {/* Input bar */}
           <div style={{ flexShrink: 0, padding: "10px 24px 18px",
-            borderTop: "1px solid rgba(255,255,255,0.055)",
-            background: "rgba(8,11,18,0.75)", backdropFilter: "blur(16px)" }}>
+            borderTop: "1px solid rgba(102,155,188,0.1)",
+            background: "rgba(0,24,36,0.82)", backdropFilter: "blur(16px)" }}>
             <div style={{ maxWidth: 780, margin: "0 auto" }}>
               <QueryInput value={query} onChange={setQuery} onSubmit={() => void submitQuery()} loading={loading} />
             </div>
@@ -590,7 +590,7 @@ export default function HomePage() {
             {!response && !loading ? (
               <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: "36px 16px", textAlign: "center" }}>
                 <div style={{ width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center",
-                  background: "rgba(91,110,245,0.07)", border: "1px solid rgba(91,110,245,0.12)" }}>
+                  background: "rgba(193,18,31,0.07)", border: "1px solid rgba(193,18,31,0.12)" }}>
                   <Sparkles size={18} style={{ color: "var(--text-ghost)" }} />
                 </div>
                 <p style={{ fontSize: 12.5, lineHeight: 1.65, color: "var(--text-muted)", maxWidth: 200 }}>
@@ -610,7 +610,7 @@ export default function HomePage() {
                 { label: "Tools",     val: (response.toolUsed ?? []).length,        color: "var(--accent-light)" },
               ].map(({ label, val, color }) => (
                 <div key={label} style={{ flex: 1, textAlign: "center", padding: "8px 6px", borderRadius: 8,
-                  background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.055)" }}>
+                  background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.1)" }}>
                   <p style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-ghost)", marginBottom: 2 }}>{label}</p>
                   <p style={{ fontSize: 16, fontWeight: 700, color, fontFamily: "var(--font-mono)", lineHeight: 1 }}>{val}</p>
                 </div>

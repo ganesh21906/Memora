@@ -17,7 +17,7 @@ export default function StructuredTruthPanel({ truth }: { truth: StructuredTruth
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         {fields.map(({ label, val, icon }) => (
-          <div key={label} style={{ borderRadius: 9, padding: "11px 12px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+          <div key={label} style={{ borderRadius: 9, padding: "11px 12px", background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.12)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, color: "var(--accent-light)" }}>
               {icon}
               <span style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>{label}</span>
@@ -28,7 +28,7 @@ export default function StructuredTruthPanel({ truth }: { truth: StructuredTruth
       </div>
 
       {/* Evidence */}
-      <div style={{ borderRadius: 9, padding: "11px 12px", background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ borderRadius: 9, padding: "11px 12px", background: "rgba(102,155,188,0.04)", border: "1px solid rgba(102,155,188,0.12)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, color: "var(--accent-light)" }}>
           <Files size={13} />
           <span style={{ fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.07em", color: "var(--text-muted)" }}>Evidence</span>
