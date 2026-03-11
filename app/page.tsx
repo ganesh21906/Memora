@@ -215,20 +215,20 @@ export default function HomePage() {
       {/* ── AURORA ──────────────────────────────────────────── */}
       <div aria-hidden style={{ position:"fixed", inset:0, zIndex:0, overflow:"hidden", pointerEvents:"none" }}>
         <div style={{ position:"absolute", width:700, height:700, top:-200, left:-100, borderRadius:"50%",
-          background:"radial-gradient(circle, #7C3AED 0%, transparent 70%)",
-          filter:"blur(80px)", opacity:0.18, mixBlendMode:"screen",
+          background:"radial-gradient(circle, #7C3AED 0%, transparent 65%)",
+          filter:"blur(72px)", opacity:0.35,
           animation:"aurora-drift 18s ease-in-out infinite" }} />
         <div style={{ position:"absolute", width:600, height:600, top:"10%", right:-150, borderRadius:"50%",
-          background:"radial-gradient(circle, #0891B2 0%, transparent 70%)",
-          filter:"blur(80px)", opacity:0.12, mixBlendMode:"screen",
+          background:"radial-gradient(circle, #0891B2 0%, transparent 65%)",
+          filter:"blur(72px)", opacity:0.22,
           animation:"aurora-drift-2 22s ease-in-out infinite" }} />
         <div style={{ position:"absolute", width:500, height:500, bottom:-100, left:"30%", borderRadius:"50%",
-          background:"radial-gradient(circle, #4F46E5 0%, transparent 70%)",
-          filter:"blur(80px)", opacity:0.14, mixBlendMode:"screen",
+          background:"radial-gradient(circle, #4F46E5 0%, transparent 65%)",
+          filter:"blur(72px)", opacity:0.28,
           animation:"aurora-drift 26s ease-in-out infinite reverse" }} />
         <div style={{ position:"absolute", width:400, height:400, bottom:"20%", right:"10%", borderRadius:"50%",
-          background:"radial-gradient(circle, #BE185D 0%, transparent 70%)",
-          filter:"blur(80px)", opacity:0.08, mixBlendMode:"screen",
+          background:"radial-gradient(circle, #BE185D 0%, transparent 65%)",
+          filter:"blur(72px)", opacity:0.18,
           animation:"aurora-drift-2 20s ease-in-out infinite" }} />
         {/* fine grid */}
         <div style={{ position:"absolute", inset:0,
@@ -426,8 +426,9 @@ export default function HomePage() {
                       padding:"11px 10px", background:"rgba(255,255,255,0.03)",
                       border:"1px solid rgba(255,255,255,0.07)", borderRadius:12 }}>
                       <span style={{ fontSize:10, color:"rgba(255,255,255,0.2)", textTransform:"uppercase", letterSpacing:"0.08em" }}>{label}</span>
-                      <span style={{ fontSize:24, fontWeight:800, color:"#A5B4FC", lineHeight:1,
-                        textShadow:"0 0 20px rgba(99,102,241,0.5)", fontFamily:"Syne,sans-serif" }}>{val}</span>
+                      <span style={{ fontSize:22, fontWeight:700, color:"#A5B4FC", lineHeight:1,
+                        textShadow:"0 0 20px rgba(99,102,241,0.5)", fontFamily:"'DM Sans',sans-serif",
+                        fontVariantNumeric:"tabular-nums" }}>{val}</span>
                     </div>
                   ))}
                 </div>

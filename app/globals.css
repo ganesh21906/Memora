@@ -101,3 +101,111 @@ input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.15); }
 .ev-bar {
   animation: bar-fill 700ms cubic-bezier(0.16,1,0.3,1) both;
 }
+
+/* ── CSS Variables ──────────────────────────────── */
+:root {
+  --accent:       #818CF8;
+  --accent-dim:   rgba(99,102,241,0.12);
+  --txt-1:        #F8FAFF;
+  --txt-2:        rgba(248,250,255,0.72);
+  --txt-3:        rgba(248,250,255,0.40);
+  --txt-4:        rgba(248,250,255,0.20);
+  --c-pdf:        #F97316;
+  --c-csv:        #10B981;
+  --c-txt:        #8B5CF6;
+  --c-email:      #EF4444;
+  --c-whatsapp:   #14B8A6;
+  --font-display: 'Syne', sans-serif;
+}
+
+/* ── Upload zone glass ────────────────────── */
+.upload-zone-glass {
+  border: 1.5px dashed rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 22px 16px;
+  text-align: center;
+  background: rgba(255,255,255,0.025);
+  cursor: pointer;
+  transition: border-color 200ms ease, background 200ms ease;
+}
+.upload-zone-glass:hover,
+.upload-zone-glass.dragging {
+  border-color: rgba(99,102,241,0.55);
+  background: rgba(99,102,241,0.06);
+}
+
+/* ── File row glass ───────────────────────── */
+.file-row-glass {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 9px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.065);
+  transition: background 140ms ease;
+}
+.file-row-glass:hover { background: rgba(255,255,255,0.055); }
+
+/* ── Section label ────────────────────────── */
+.sec-label {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.09em; text-transform: uppercase;
+  color: rgba(248,250,255,0.22);
+}
+
+/* ── Pills ────────────────────────────────── */
+.pill {
+  display: inline-flex; align-items: center;
+  padding: 2px 7px; border-radius: 99px;
+  font-size: 10.5px; font-weight: 600;
+  border: 1px solid transparent; white-space: nowrap;
+}
+.pill-accent  { background: rgba(99,102,241,0.12);  color: #A5B4FC; border-color: rgba(99,102,241,0.28); }
+.pill-orange  { background: rgba(249,115,22,0.10);   color: #FB923C; border-color: rgba(249,115,22,0.25); }
+.pill-violet  { background: rgba(139,92,246,0.10);   color: #A78BFA; border-color: rgba(139,92,246,0.25); }
+.pill-green   { background: rgba(16,185,129,0.10);   color: #34D399; border-color: rgba(16,185,129,0.25); }
+.pill-red     { background: rgba(239,68,68,0.10);    color: #F87171; border-color: rgba(239,68,68,0.25); }
+.pill-teal    { background: rgba(20,184,166,0.10);   color: #2DD4BF; border-color: rgba(20,184,166,0.25); }
+.pill-ghost   { background: rgba(255,255,255,0.04);  color: rgba(255,255,255,0.35); border-color: rgba(255,255,255,0.10); }
+
+/* ── Input glass ──────────────────────────── */
+.input-glass {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.input-glass:focus-within {
+  border-color: rgba(99,102,241,0.5);
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.08);
+}
+
+/* ── Evidence card ────────────────────────── */
+.ev-card {
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeUp 350ms cubic-bezier(0.16,1,0.3,1) both;
+}
+
+/* ── AI chat bubble ───────────────────────── */
+.bubble-ai {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-left: 2px solid #818CF8;
+  border-radius: 4px 14px 14px 14px;
+}
+
+/* ── Animations ────────────────────────────── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.anim-fade-in  { animation: fadeIn 260ms ease both; }
+.anim-float-up { animation: fadeUp 500ms cubic-bezier(0.16,1,0.3,1) both; }
+
+/* ── Gradient text ────────────────────────── */
+.grad-text {
+  background: linear-gradient(135deg, #818CF8 0%, #C084FC 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Responsive helpers ─────────────────────── */
+@media (max-width: 1023px) { .lg-hide { display: none !important; } }
+@media (max-width: 1279px) { .xl-hide { display: none !important; } }
