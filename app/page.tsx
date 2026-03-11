@@ -212,28 +212,57 @@ export default function HomePage() {
   return (
     <div style={{ display:"flex", flexDirection:"column", width:"100vw", height:"100vh", overflow:"hidden", background:"#03040A", position:"relative" }}>
 
-      {/* ── AURORA ──────────────────────────────────────────── */}
+      {/* ── AURORA + PERSPECTIVE GRID ───────────────────────── */}
       <div aria-hidden style={{ position:"fixed", inset:0, zIndex:0, overflow:"hidden", pointerEvents:"none" }}>
-        <div style={{ position:"absolute", width:700, height:700, top:-200, left:-100, borderRadius:"50%",
-          background:"radial-gradient(circle, #7C3AED 0%, transparent 65%)",
-          filter:"blur(72px)", opacity:0.35,
-          animation:"aurora-drift 18s ease-in-out infinite" }} />
-        <div style={{ position:"absolute", width:600, height:600, top:"10%", right:-150, borderRadius:"50%",
-          background:"radial-gradient(circle, #0891B2 0%, transparent 65%)",
-          filter:"blur(72px)", opacity:0.22,
-          animation:"aurora-drift-2 22s ease-in-out infinite" }} />
-        <div style={{ position:"absolute", width:500, height:500, bottom:-100, left:"30%", borderRadius:"50%",
-          background:"radial-gradient(circle, #4F46E5 0%, transparent 65%)",
-          filter:"blur(72px)", opacity:0.28,
-          animation:"aurora-drift 26s ease-in-out infinite reverse" }} />
-        <div style={{ position:"absolute", width:400, height:400, bottom:"20%", right:"10%", borderRadius:"50%",
-          background:"radial-gradient(circle, #BE185D 0%, transparent 65%)",
-          filter:"blur(72px)", opacity:0.18,
-          animation:"aurora-drift-2 20s ease-in-out infinite" }} />
-        {/* fine grid */}
+
+        {/* ── 6 aurora mesh blobs ── */}
+        {/* blob 1 — large violet, top-left anchor */}
+        <div style={{ position:"absolute", width:780, height:780, top:-220, left:-140, borderRadius:"50%",
+          background:"radial-gradient(circle, #7C3AED 0%, transparent 62%)",
+          filter:"blur(80px)", opacity:0.38,
+          animation:"aurora-drift 20s ease-in-out infinite" }} />
+        {/* blob 2 — cyan, top-right */}
+        <div style={{ position:"absolute", width:560, height:560, top:"5%", right:-160, borderRadius:"50%",
+          background:"radial-gradient(circle, #0891B2 0%, transparent 62%)",
+          filter:"blur(70px)", opacity:0.26,
+          animation:"aurora-drift-2 24s ease-in-out infinite" }} />
+        {/* blob 3 — indigo, center-bottom */}
+        <div style={{ position:"absolute", width:520, height:520, bottom:-80, left:"28%", borderRadius:"50%",
+          background:"radial-gradient(circle, #4F46E5 0%, transparent 62%)",
+          filter:"blur(68px)", opacity:0.30,
+          animation:"aurora-drift-3 28s ease-in-out infinite" }} />
+        {/* blob 4 — rose, right-mid */}
+        <div style={{ position:"absolute", width:380, height:380, top:"40%", right:"5%", borderRadius:"50%",
+          background:"radial-gradient(circle, #BE185D 0%, transparent 62%)",
+          filter:"blur(60px)", opacity:0.20,
+          animation:"aurora-drift-4 22s ease-in-out infinite" }} />
+        {/* blob 5 — teal accent, center-left */}
+        <div style={{ position:"absolute", width:320, height:320, top:"55%", left:"8%", borderRadius:"50%",
+          background:"radial-gradient(circle, #0D9488 0%, transparent 62%)",
+          filter:"blur(56px)", opacity:0.18,
+          animation:"aurora-drift-2 30s ease-in-out infinite reverse" }} />
+        {/* blob 6 — purple small, center highlight */}
+        <div style={{ position:"absolute", width:260, height:260, top:"25%", left:"45%", borderRadius:"50%",
+          background:"radial-gradient(circle, #A855F7 0%, transparent 62%)",
+          filter:"blur(52px)", opacity:0.16,
+          animation:"aurora-drift-3 16s ease-in-out infinite reverse" }} />
+
+        {/* ── Perspective scrolling grid ── */}
+        {/* Receding floor grid — perspective container */}
+        <div style={{
+          position:"absolute", left:"-10%", right:"-10%", bottom:0, height:"65%",
+          transformOrigin:"bottom center",
+          transform:"perspective(600px) rotateX(55deg)",
+          WebkitMaskImage:"linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 80%)",
+          maskImage:"linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 80%)",
+        }}>
+          <div className="grid-scroll-inner" />
+        </div>
+
+        {/* flat top grid — very subtle dots on the ceiling */}
         <div style={{ position:"absolute", inset:0,
-          backgroundImage:"linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)",
-          backgroundSize:"48px 48px" }} />
+          backgroundImage:"radial-gradient(circle, rgba(255,255,255,0.045) 1px, transparent 1px)",
+          backgroundSize:"44px 44px" }} />
       </div>
 
       {/* ── TOPBAR ──────────────────────────────────────────── */}
@@ -251,7 +280,7 @@ export default function HomePage() {
             boxShadow:"0 0 18px rgba(99,102,241,0.55), 0 0 4px rgba(167,139,250,0.3)" }}>
             <Brain size={14} color="#fff" />
           </div>
-          <span style={{ fontSize:17, fontWeight:800, letterSpacing:"-0.04em", fontFamily:"Syne,sans-serif", color:"#F8FAFF" }}>
+          <span style={{ fontSize:17, fontWeight:700, letterSpacing:"-0.03em", fontFamily:"'Syne', sans-serif", color:"#F8FAFF" }}>
             Memora{" "}
             <span style={{ background:"linear-gradient(135deg,#818CF8,#C084FC)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>AI</span>
           </span>
@@ -283,7 +312,7 @@ export default function HomePage() {
             {showUsage && (
               <div style={{ ...dropdownStyle, width:248 }}>
                 <div style={{ padding:"13px 16px", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
-                  <p style={{ fontSize:13, fontWeight:700, color:"#F8FAFF", fontFamily:"Syne,sans-serif" }}>API Usage</p>
+                  <p style={{ fontSize:13, fontWeight:700, color:"#F8FAFF", fontFamily:"'Syne', sans-serif" }}>API Usage</p>
                   <p style={{ fontSize:11, color:"rgba(255,255,255,0.3)", marginTop:2, fontFamily:"monospace" }}>{usageData.model}</p>
                 </div>
                 <div style={{ padding:14, display:"flex", flexDirection:"column", gap:11 }}>
@@ -331,7 +360,7 @@ export default function HomePage() {
             {showUserMenu && (
               <div style={{ ...dropdownStyle, width:210 }}>
                 <div style={{ padding:"13px 16px", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
-                  <p style={{ fontSize:13, fontWeight:700, color:"#F8FAFF", fontFamily:"Syne,sans-serif" }}>{activeUser.name}</p>
+                  <p style={{ fontSize:13, fontWeight:700, color:"#F8FAFF", fontFamily:"'Syne', sans-serif" }}>{activeUser.name}</p>
                   <p style={{ fontSize:11.5, color:"rgba(255,255,255,0.3)", marginTop:2 }}>{activeUser.email}</p>
                 </div>
                 <div style={{ padding:6 }}>
@@ -354,7 +383,7 @@ export default function HomePage() {
 
         {/* ── LEFT SIDEBAR ────────────────────────────────── */}
         <aside style={{
-          width:262, flexShrink:0, display:"flex", flexDirection:"column", overflow:"hidden",
+          width:290, flexShrink:0, display:"flex", flexDirection:"column", overflow:"hidden",
           ...glass(0.65),
           borderRight:"1px solid rgba(255,255,255,0.07)",
           animation:"slideLeft 450ms cubic-bezier(0.16,1,0.3,1) both",
@@ -501,7 +530,7 @@ export default function HomePage() {
                   </div>
 
                   <div>
-                    <h1 style={{ fontSize:30, fontWeight:800, color:"#F8FAFF", letterSpacing:"-0.04em", lineHeight:1.15, marginBottom:12, fontFamily:"Syne,sans-serif" }}>
+                    <h1 style={{ fontSize:30, fontWeight:700, color:"#F8FAFF", letterSpacing:"-0.03em", lineHeight:1.15, marginBottom:12, fontFamily:"'Syne', sans-serif" }}>
                       What would you like<br />
                       <span style={{ background:"linear-gradient(135deg,#818CF8,#C084FC)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>
                         to remember?
@@ -613,22 +642,22 @@ export default function HomePage() {
 
         {/* ── RIGHT PANEL ──────────────────────────────────── */}
         <aside style={{
-          width:300, flexShrink:0, display:"flex", flexDirection:"column", overflow:"hidden",
+          width:420, flexShrink:0, display:"flex", flexDirection:"column", overflow:"hidden",
           ...glass(0.65),
           borderLeft:"1px solid rgba(255,255,255,0.07)",
           animation:"slideRight 450ms cubic-bezier(0.16,1,0.3,1) both",
         }}>
           {/* Header */}
           <div style={{ flexShrink:0, display:"flex", alignItems:"center", gap:9, padding:"15px 16px", borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
-            <MessageSquareText size={14} style={{ color:"#818CF8" }} />
-            <span style={{ fontSize:13, fontWeight:700, color:"rgba(255,255,255,0.55)", fontFamily:"Syne,sans-serif" }}>Insights &amp; Verification</span>
+            <MessageSquareText size={15} style={{ color:"#818CF8" }} />
+            <span style={{ fontSize:14, fontWeight:700, color:"rgba(255,255,255,0.55)", fontFamily:"'Syne', sans-serif" }}>Insights &amp; Verification</span>
           </div>
 
           {/* Insight tabs */}
           <div style={{ flexShrink:0, display:"flex", borderBottom:"1px solid rgba(255,255,255,0.07)", padding:"0 4px" }}>
             {INSIGHT_TABS.map(({key,label,icon})=>(
               <button key={key} onClick={()=>setInsightTab(key)}
-                style={{ flex:1, padding:"10px 6px", fontSize:11.5, fontWeight:500, background:"transparent", border:"none",
+                style={{ flex:1, padding:"11px 6px", fontSize:12.5, fontWeight:500, background:"transparent", border:"none",
                   borderBottom: insightTab===key ? "2px solid #6366F1" : "2px solid transparent",
                   marginBottom:-1, display:"flex", alignItems:"center", justifyContent:"center", gap:5,
                   color: insightTab===key ? "#A5B4FC" : "rgba(255,255,255,0.22)",
@@ -666,9 +695,9 @@ export default function HomePage() {
                 <div key={label} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:2,
                   padding:"9px 8px", background:"rgba(255,255,255,0.025)",
                   border:"1px solid rgba(255,255,255,0.07)", borderRadius:10 }}>
-                  <span style={{ fontSize:9.5, textTransform:"uppercase", letterSpacing:"0.08em", color:"rgba(255,255,255,0.2)" }}>{label}</span>
-                  <span style={{ fontSize:18, fontWeight:800, color, lineHeight:1, fontFamily:"Syne,sans-serif",
-                    textShadow:`0 0 16px ${color}55` }}>{val}</span>
+                  <span style={{ fontSize:10.5, textTransform:"uppercase", letterSpacing:"0.08em", color:"rgba(255,255,255,0.2)" }}>{label}</span>
+                  <span style={{ fontSize:20, fontWeight:800, color, lineHeight:1, fontFamily:"'DM Sans',sans-serif",
+                    textShadow:`0 0 16px ${color}55`, fontVariantNumeric:"tabular-nums" }}>{val}</span>
                 </div>
               ))}
             </div>

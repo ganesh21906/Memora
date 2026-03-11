@@ -244,6 +244,31 @@ function detectConflictsFromText(rawAnswer: string): ConflictItem[] {
   }];
 }
 
+// If the Python parser failed, the backend puts the entire raw JSON string into
+// `answer`. Detect this and recover the real fields so the UI gets clean data.
+function recoverRawJsonAnswer(data: {
+  answer: string;
+  structured_truth?: Record<string, unknown>;
+  conflicts?: unknown[];
+}): void {
+  const a = data.answer?.trim() ?? "";
+  if (!a.startsWith("{")) return;
+  try {
+    const parsed = JSON.parse(a) as Record<string, unknown>;
+    if (typeof parsed.answer === "string") {
+      data.answer = parsed.answer;
+      if (!data.structured_truth || Object.keys(data.structured_truth).length === 0) {
+        data.structured_truth = (parsed.structured_truth as Record<string, unknown>) ?? {};
+      }
+      if (!data.conflicts || data.conflicts.length === 0) {
+        data.conflicts = Array.isArray(parsed.conflicts) ? parsed.conflicts : [];
+      }
+    }
+  } catch {
+    // not JSON — answer is already plain text, leave it alone
+  }
+}
+
 function adaptResponse(backendData: {
   answer: string;
   tools_called: string[];
@@ -252,6 +277,9 @@ function adaptResponse(backendData: {
   structured_truth?: Record<string, unknown>;
   conflicts?: unknown[];
 }, query: string): QueryResponse {
+  // Recover if the backend put raw JSON into the answer field
+  recoverRawJsonAnswer(backendData);
+
   const hasAnswer =
     backendData.answer &&
     !backendData.answer.toLowerCase().includes("couldn't find") &&
